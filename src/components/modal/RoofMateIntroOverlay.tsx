@@ -3,6 +3,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { X, Volume2, VolumeX } from "lucide-react";
 import { clsx } from "clsx";
 import { useReducedMotion } from "../../hooks/useReducedMotion";
+import { devLog } from "../../utils/devLog";
 
 interface RoofMateIntroOverlayProps {
   isOpen: boolean;
@@ -22,7 +23,7 @@ export default function RoofMateIntroOverlay({
   // Show overlay when opened (no sessionStorage check - always show!)
   useEffect(() => {
     if (isOpen) {
-      console.log('[RoofMate Intro] Opening overlay');
+      devLog('[RoofMate Intro] Opening overlay');
       setIsVisible(true);
       setIsFinished(false);
     }
@@ -33,7 +34,7 @@ export default function RoofMateIntroOverlay({
     if (!isVisible || !videoRef.current) return;
 
     const video = videoRef.current;
-    console.log('[RoofMate Intro] Video element ready, attempting play', {
+    devLog('[RoofMate Intro] Video element ready, attempting play', {
       src: video.src,
       readyState: video.readyState,
       networkState: video.networkState
@@ -48,7 +49,7 @@ export default function RoofMateIntroOverlay({
       if (playPromise !== undefined) {
         playPromise
           .then(() => {
-            console.log('[RoofMate Intro] Video autoplay started successfully (unmuted)');
+            devLog('[RoofMate Intro] Video autoplay started successfully (unmuted)');
             setIsMuted(false);
           })
           .catch((error) => {
@@ -57,7 +58,7 @@ export default function RoofMateIntroOverlay({
             video.muted = true;
             setIsMuted(true);
             video.play()
-              .then(() => console.log('[RoofMate Intro] Video playing (muted)'))
+              .then(() => devLog('[RoofMate Intro] Video playing (muted)'))
               .catch(err => {
                 console.error('[RoofMate Intro] Muted autoplay also failed:', err.message);
               });
@@ -78,7 +79,7 @@ export default function RoofMateIntroOverlay({
   }, [isOpen]);
 
   const handleSkip = () => {
-    console.log('[RoofMate Intro] User clicked skip');
+    devLog('[RoofMate Intro] User clicked skip');
     // Stop video if playing
     if (videoRef.current) {
       videoRef.current.pause();
@@ -93,7 +94,7 @@ export default function RoofMateIntroOverlay({
   };
 
   const handleVideoEnded = () => {
-    console.log('[RoofMate Intro] Video ended naturally');
+    devLog('[RoofMate Intro] Video ended naturally');
     setIsFinished(true);
     // Fade out then close
     setTimeout(() => {
@@ -107,7 +108,7 @@ export default function RoofMateIntroOverlay({
       const newMutedState = !isMuted;
       videoRef.current.muted = newMutedState;
       setIsMuted(newMutedState);
-      console.log('[RoofMate Intro] Mute toggled:', newMutedState);
+      devLog('[RoofMate Intro] Mute toggled:', newMutedState);
     }
   };
 
@@ -157,18 +158,17 @@ export default function RoofMateIntroOverlay({
             <div className="relative w-full" style={{ aspectRatio: "16/9", maxHeight: "90vh" }}>
               <video
                 ref={videoRef}
-                src="/teasers/roofmate.MP4"
+                src="/teasers/roofmate.mp4"
                 className="w-full h-full object-contain bg-black"
                 autoPlay
                 playsInline
                 preload="auto"
                 onEnded={handleVideoEnded}
-                onLoadStart={() => console.log('[RoofMate Intro] Video load started')}
-                onLoadedData={() => console.log('[RoofMate Intro] Video data loaded')}
+                onLoadStart={() => devLog('[RoofMate Intro] Video load started')}
+                onLoadedData={() => devLog('[RoofMate Intro] Video data loaded')}
                 onError={(e) => console.error('[RoofMate Intro] Video error:', e)}
                 style={{ display: 'block' }}
               >
-                <source src="/teasers/roofmate.MP4" type="video/mp4" />
                 <source src="/teasers/roofmate.mp4" type="video/mp4" />
                 Your browser does not support the video tag.
               </video>

@@ -27,10 +27,12 @@ export interface Org {
 /**
  * Organization registry mapping OrgId to Org data
  * 
- * Logo file naming convention:
- * - Use lowercase, hyphenated names matching the OrgId
- * - Example: MEET -> meet.png, HUJI -> huji.jpg
- * - Place all logos in /public/images/logos/
+ * Logo files live in /public/images/logos/.
+ *
+ * These paths must match the filename on disk EXACTLY, including case. macOS is
+ * case-insensitive and will happily serve DESY.png for a request to desy.png,
+ * so a mismatch looks fine locally and 404s once deployed to Linux. If a logo
+ * renders on your machine but not in production, check the case first.
  */
 export const ORGS: Record<OrgId, Org> = {
   MEET: {
@@ -48,13 +50,13 @@ export const ORGS: Record<OrgId, Org> = {
   DESY: {
     id: "DESY",
     name: "DESY (Deutsches Elektronen-Synchrotron)",
-    logoSrc: "/images/logos/desy.png", // TODO: Add DESY logo file to /public/images/logos/desy.png
+    logoSrc: "/images/logos/DESY.png",
     alt: "DESY logo",
   },
   WEIZMANN: {
     id: "WEIZMANN",
     name: "Weizmann Institute of Science",
-    logoSrc: "/images/logos/weizmann.png", // TODO: Add Weizmann logo file to /public/images/logos/weizmann.png (not currently used in content)
+    logoSrc: "/images/logos/WEIZMANN.png",
     alt: "Weizmann Institute of Science logo",
   },
   MIT: {

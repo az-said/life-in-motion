@@ -11,6 +11,7 @@
  */
 
 import { useState } from "react";
+import { devLog } from "../../utils/devLog";
 
 export function useIntroGate() {
   // Always show intro - ignore localStorage gate
@@ -18,13 +19,13 @@ export function useIntroGate() {
 
   const complete = () => {
     // Don't persist intro completion - always show on next load
-    console.log("[useIntroGate] complete() called");
+    devLog("[useIntroGate] complete() called");
     setShouldShow(false);
   };
 
   const skip = () => {
     // Don't persist skip - always show on next load
-    console.log("[useIntroGate] skip() called");
+    devLog("[useIntroGate] skip() called");
     setShouldShow(false);
   };
 

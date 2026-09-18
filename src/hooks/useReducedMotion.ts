@@ -1,24 +1,13 @@
-import { useEffect, useState } from "react";
+import { useMediaQuery } from "./useMediaQuery";
 
 /**
- * Hook to detect and respect prefers-reduced-motion
+ * Hook to detect and respect prefers-reduced-motion.
+ *
+ * Reads the live value during render, so a reduced-motion visitor never sees a
+ * single frame of animation before the preference is applied.
  */
 export function useReducedMotion(): boolean {
-  const [prefersReducedMotion, setPrefersReducedMotion] = useState(false);
-
-  useEffect(() => {
-    const mediaQuery = window.matchMedia("(prefers-reduced-motion: reduce)");
-    setPrefersReducedMotion(mediaQuery.matches);
-
-    const handleChange = (e: MediaQueryListEvent) => {
-      setPrefersReducedMotion(e.matches);
-    };
-
-    mediaQuery.addEventListener("change", handleChange);
-    return () => mediaQuery.removeEventListener("change", handleChange);
-  }, []);
-
-  return prefersReducedMotion;
+  return useMediaQuery("(prefers-reduced-motion: reduce)");
 }
 
 /**

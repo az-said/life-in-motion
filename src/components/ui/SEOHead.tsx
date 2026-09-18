@@ -5,16 +5,30 @@ interface SEOHeadProps {
   title?: string;
   description?: string;
   preloadImage?: string;
+  /**
+   * Use `title` verbatim instead of appending the site lockup.
+   *
+   * Section pages want "Ventures — Said Azaizah — Life in Motion". The
+   * dashboard does not: it is the front door, so its tab should read exactly
+   * what index.html ships and what a search result shows, without a third
+   * clause stacked on the end.
+   */
+  exactTitle?: boolean;
 }
 
-export default function SEOHead({ 
-  title, 
+export default function SEOHead({
+  title,
   description = "A journey shaped by identity, driven by bridge-building, and expressed through making.",
-  preloadImage
+  preloadImage,
+  exactTitle = false
 }: SEOHeadProps) {
   useEffect(() => {
-    const fullTitle = title ? `${title} — ${SITE_TITLE}` : SITE_TITLE;
-    
+    const fullTitle = title
+      ? exactTitle
+        ? title
+        : `${title} — ${SITE_TITLE}`
+      : SITE_TITLE;
+
     document.title = fullTitle;
     
     // Update meta description
@@ -56,7 +70,7 @@ export default function SEOHead({
       preloadLink.setAttribute("href", preloadImage);
       preloadLink.setAttribute("fetchpriority", "high");
     }
-  }, [title, description, preloadImage]);
+  }, [title, description, preloadImage, exactTitle]);
 
   return null;
 }

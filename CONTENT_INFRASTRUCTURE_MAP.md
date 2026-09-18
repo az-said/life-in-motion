@@ -71,7 +71,7 @@ This document provides a comprehensive guide to where all content lives, how it'
 | Route | Page Component | Key Components Used |
 |-------|---------------|---------------------|
 | `/` | `src/app/views/IntroGatePage.tsx` | `IntroGateOverlay`, `RecapGateOverlay`, `TypewriterSequence` |
-| `/story` | `src/app/views/StoryPage.tsx` | `StoryShell`, `CinematicScene`, `KineticText`, `MobileScrollHint` |
+| `/story` | `src/app/views/StoryPage.tsx` | `StoryShell`, `CinematicScene`, `MobileScrollAffordance` |
 | `/honors` | `src/app/views/HonorsPage.tsx` | `CaseFileModal`, `LazyImage`, `LazyVideo`, `Badge`, `OrgBadges` |
 | `/ventures` | `src/app/views/VenturesPage.tsx` | `CaseFileModal`, `HeroMedia`, `ProofLinksStrip`, `Badge`, `OrgBadges` |
 | `/atlas` | `src/app/views/AtlasPage.tsx` | `AtlasTimelineGrid`, `CaseFileModal`, `Badge`, `OrgBadges` |
@@ -207,7 +207,7 @@ All content items follow this structure (defined in `src/content/types.ts`):
 |-------|----------|----------|---------------------------|
 | `id` | Scene identifier | ✅ Required | None |
 | `title` | Scene title overlay | ✅ Required | Responsive font sizes |
-| `beats` | Array of exactly 3 beat strings | ✅ Required | KineticText animation |
+| `beats` | Array of exactly 3 beat strings | ✅ Required | Progressive beat reveal in `CinematicScene` |
 | `mediaRef` | Background media path | ✅ Required | Full-bleed background |
 | `itemIds` | Linked content items | Optional | Clickable links in Story |
 
@@ -290,7 +290,7 @@ All content items follow this structure (defined in `src/content/types.ts`):
 **`beats[]` (each beat)**
 - **Ideal**: 40-70 characters per beat
 - **Max recommended**: 100 characters per beat
-- **Overflow**: Wraps naturally in KineticText
+- **Overflow**: Wraps naturally in the scene's beat overlay
 - **Font size**: `text-lg md:text-xl` (18-20px)
 - **Container**: Story page kinetic text overlay
 - **Used in**: Story page scene beats
@@ -677,7 +677,6 @@ When users click the scene, they can navigate to the linked content item.
 
 ✅ **Status**: Implemented
 - **Files**:
-  - `src/components/story/MobileScrollHint.tsx`
   - `src/components/story/MobileScrollAffordance.tsx`
 - **Action**: Test on mobile devices, ensure hints appear and behave correctly
 - **Check**: Verify hints disappear after user interaction

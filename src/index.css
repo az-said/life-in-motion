@@ -80,6 +80,38 @@ body {
   font-family: "Iowan Old Style", "Palatino Linotype", Palatino, "Georgia", "Times New Roman", Times, serif;
 }
 
+/*
+ * Route enter fade.
+ *
+ * Deliberately fail-safe: the element's resting state is fully opaque and the
+ * keyframe only fades *in* from transparent. If the animation never runs — a
+ * backgrounded tab pauses rAF, reduced motion, a paused compositor — the page
+ * is simply visible.
+ *
+ * This replaces a Framer Motion wrapper carrying `initial={{ opacity: 0, y: 8 }}`,
+ * which failed in two ways at once:
+ *
+ *   1. Page visibility depended on a JS animation completing. Loaded in a
+ *      background tab, the wrapper stayed at `opacity: 0` indefinitely — the
+ *      route was mounted, correct, and invisible.
+ *   2. Any transform, including `translateY(0)`, makes the element the
+ *      containing block for every `position: fixed` descendant. So `fixed`
+ *      silently stopped meaning "relative to the viewport" on every page:
+ *      Story's skip button landed 75px low and the scroll affordance hung 8px
+ *      below the bottom edge.
+ *
+ * No transform here, so `fixed` means fixed again.
+ */
+@keyframes route-enter {
+  from {
+    opacity: 0;
+  }
+}
+
+.route-enter {
+  animation: route-enter 280ms cubic-bezier(0.4, 0, 0.2, 1);
+}
+
 /* Respect reduced motion */
 @media (prefers-reduced-motion: reduce) {
   *,
