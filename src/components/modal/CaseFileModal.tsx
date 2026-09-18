@@ -10,7 +10,8 @@ import Badge from "../ui/Badge";
 import OrgBadges from "../ui/OrgBadges";
 import { useReducedMotion } from "../../hooks/useReducedMotion";
 import { useScrollContainerLock } from "../../hooks/useScrollContainerLock";
-import MediaCarousel, { buildMediaArray } from "../media/MediaCarousel";
+import MediaCarousel from "../media/MediaCarousel";
+import { buildMediaArray } from "../media/mediaItems";
 import RoofMateIntroOverlay from "./RoofMateIntroOverlay";
 import { devLog } from "../../utils/devLog";
 
@@ -35,35 +36,23 @@ export default function CaseFileModal({
   // Lock internal scroll container when modal is open
   useScrollContainerLock(isOpen);
 
-  // Check if RoofMate intro should be shown
-  // MUST be called before early return to maintain consistent hook order
-  const [showRoofMateIntro, setShowRoofMateIntro] = useState(false);
-  const [introHasBeenShown, setIntroHasBeenShown] = useState(false);
-  
+  // The intro shows itself for RoofMate until it is dismissed, so only the
+  // dismissal needs to be state.
+  const [introDismissed, setIntroDismissed] = useState(false);
+  const showRoofMateIntro = isOpen && item?.id === "roofmate" && !introDismissed;
+
   useEffect(() => {
-    devLog('[DEBUG] Modal opened:', { 
-      isOpen, 
-      itemId: item?.id, 
+    devLog('[DEBUG] Modal opened:', {
+      isOpen,
+      itemId: item?.id,
       itemTitle: item?.title,
       isRoofMate: item?.id === "roofmate",
-      introHasBeenShown
     });
-    
-    // Show intro for RoofMate only if not already shown in this modal session
-    if (isOpen && item?.id === "roofmate" && !introHasBeenShown) {
-      devLog('[DEBUG] Showing RoofMate intro');
-      setShowRoofMateIntro(true);
-    } else if (!isOpen) {
-      // Reset when modal closes completely
-      setShowRoofMateIntro(false);
-      setIntroHasBeenShown(false);
-    }
-  }, [isOpen, item?.id, introHasBeenShown]);
+  }, [isOpen, item?.id, item?.title]);
 
   const handleIntroClose = () => {
     devLog('[DEBUG] Intro closing');
-    setShowRoofMateIntro(false);
-    setIntroHasBeenShown(true); // Mark as shown so it doesn't reopen
+    setIntroDismissed(true); // Mark as shown so it doesn't reopen
   };
 
   // Close on ESC
@@ -87,13 +76,15 @@ export default function CaseFileModal({
     return () => document.removeEventListener("keydown", handleEscape);
   }, [isOpen, onClose, showYouTube, showRoofMateIntro]);
 
-  // Reset YouTube state when modal closes
+  // Drop transient view state on the way out, so a reopened modal starts fresh.
   useEffect(() => {
-    if (!isOpen) {
+    if (!isOpen) return;
+    return () => {
       setShowYouTube(false);
       setYoutubeUrl(null);
       setIsDeepDiveOpen(false);
-    }
+      setIntroDismissed(false);
+    };
   }, [isOpen]);
 
   // Focus trap
@@ -366,8 +357,7 @@ export default function CaseFileModal({
                             <button
                               onClick={() => {
                                 devLog('[DEBUG] Replaying intro');
-                                setIntroHasBeenShown(false);
-                                setShowRoofMateIntro(true);
+                                setIntroDismissed(false);
                               }}
                               className={clsx(
                                 "mt-4 inline-flex items-center gap-2 px-4 py-2 rounded-lg",

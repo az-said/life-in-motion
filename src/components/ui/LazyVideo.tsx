@@ -27,41 +27,39 @@ const LazyVideo = forwardRef<HTMLVideoElement, LazyVideoProps>(({
   preload = "auto",
 }, ref) => {
   const [isLoaded, setIsLoaded] = useState(false);
-  const [shouldLoad, setShouldLoad] = useState(false);
+  const [isInView, setIsInView] = useState(false);
+  const containerRef = useRef<HTMLDivElement>(null);
   const internalVideoRef = useRef<HTMLVideoElement>(null);
-  const observerRef = useRef<IntersectionObserver | null>(null);
-  
+
   // Use forwarded ref or internal ref
   const videoRef = (ref as React.MutableRefObject<HTMLVideoElement | null>) || internalVideoRef;
 
+  // Autoplay videos load immediately; the rest wait until they scroll near view.
+  const shouldLoad = autoPlay || isInView;
+
   useEffect(() => {
-    const video = videoRef.current;
-    if (!video) return;
+    if (autoPlay) return;
 
-    // For autoplay videos, load immediately
-    if (autoPlay) {
-      setShouldLoad(true);
-      return;
-    }
+    // The container is observed rather than the video, because the video only
+    // mounts once loading has been triggered.
+    const container = containerRef.current;
+    if (!container) return;
 
-    // Use Intersection Observer for lazy loading
-    observerRef.current = new IntersectionObserver(
+    const observer = new IntersectionObserver(
       (entries) => {
         entries.forEach((entry) => {
           if (entry.isIntersecting) {
-            setShouldLoad(true);
-            observerRef.current?.disconnect();
+            setIsInView(true);
+            observer.disconnect();
           }
         });
       },
       { rootMargin: "50px" }
     );
 
-    observerRef.current.observe(video);
+    observer.observe(container);
 
-    return () => {
-      observerRef.current?.disconnect();
-    };
+    return () => observer.disconnect();
   }, [autoPlay]);
 
   const handleLoadedData = () => {
@@ -70,7 +68,7 @@ const LazyVideo = forwardRef<HTMLVideoElement, LazyVideoProps>(({
   };
 
   return (
-    <div className={clsx("relative", className)}>
+    <div ref={containerRef} className={clsx("relative", className)}>
       {!isLoaded && (
         <div className="absolute inset-0 bg-[rgb(var(--bg-1))] animate-pulse" />
       )}

@@ -3,28 +3,12 @@ import { createPortal } from "react-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import { X } from "lucide-react";
 import { clsx } from "clsx";
+import { extractYouTubeId } from "./extractYouTubeId";
 
 interface YouTubeEmbedProps {
   videoId: string;
   isOpen: boolean;
   onClose: () => void;
-}
-
-// Extract YouTube video ID from URL
-export function extractYouTubeId(url: string): string | null {
-  const patterns = [
-    /(?:youtube\.com\/watch\?v=|youtu\.be\/|youtube\.com\/embed\/)([^&\n?#]+)/,
-    /youtube\.com\/watch\?.*v=([^&\n?#]+)/,
-  ];
-
-  for (const pattern of patterns) {
-    const match = url.match(pattern);
-    if (match && match[1]) {
-      return match[1];
-    }
-  }
-
-  return null;
 }
 
 export default function YouTubeEmbed({
@@ -39,13 +23,14 @@ export default function YouTubeEmbed({
   const id = extractYouTubeId(videoId) || videoId;
 
   useEffect(() => {
-    if (isOpen) {
-      // Small delay for smooth animation
-      const timer = setTimeout(() => setIsLoaded(true), 100);
-      return () => clearTimeout(timer);
-    } else {
+    if (!isOpen) return;
+
+    // Small delay for smooth animation
+    const timer = setTimeout(() => setIsLoaded(true), 100);
+    return () => {
+      clearTimeout(timer);
       setIsLoaded(false);
-    }
+    };
   }, [isOpen]);
 
   if (!isOpen) return null;

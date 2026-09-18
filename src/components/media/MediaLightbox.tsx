@@ -7,7 +7,7 @@ import LazyImage from "../ui/LazyImage";
 import LazyVideo from "../ui/LazyVideo";
 import { useReducedMotion } from "../../hooks/useReducedMotion";
 import { useScrollContainerLock } from "../../hooks/useScrollContainerLock";
-import type { MediaItem } from "./MediaCarousel";
+import type { MediaItem } from "./mediaItems";
 
 interface MediaLightboxProps {
   items: MediaItem[];
@@ -26,7 +26,13 @@ export default function MediaLightbox({
   isOpen,
   onClose,
 }: MediaLightboxProps) {
-  const [currentIndex, setCurrentIndex] = useState(initialIndex);
+  // Navigation is held as an offset from initialIndex so the visible slide stays
+  // derived from props; mirroring initialIndex into state required an effect.
+  const [navOffset, setNavOffset] = useState(0);
+  const currentIndex =
+    items.length > 0
+      ? (((initialIndex + navOffset) % items.length) + items.length) % items.length
+      : initialIndex;
   const [touchStart, setTouchStart] = useState<number | null>(null);
   const [touchEnd, setTouchEnd] = useState<number | null>(null);
   const lightboxRef = useRef<HTMLDivElement>(null);
@@ -39,20 +45,20 @@ export default function MediaLightbox({
   // Navigation functions (defined before useEffect that uses them)
   const goToPrevious = useCallback(() => {
     if (items.length <= 1) return;
-    setCurrentIndex((prev) => (prev - 1 + items.length) % items.length);
+    setNavOffset((prev) => prev - 1);
   }, [items.length]);
 
   const goToNext = useCallback(() => {
     if (items.length <= 1) return;
-    setCurrentIndex((prev) => (prev + 1) % items.length);
+    setNavOffset((prev) => prev + 1);
   }, [items.length]);
 
-  // Reset index when lightbox opens
+  // Drop accumulated navigation on the way out, so the next open starts at
+  // whatever initialIndex it is given.
   useEffect(() => {
-    if (isOpen) {
-      setCurrentIndex(initialIndex);
-    }
-  }, [isOpen, initialIndex]);
+    if (!isOpen) return;
+    return () => setNavOffset(0);
+  }, [isOpen]);
 
   // Keyboard navigation
   useEffect(() => {

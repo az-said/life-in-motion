@@ -14,68 +14,51 @@ export default function RoofMateIntroOverlay({
   isOpen,
   onClose,
 }: RoofMateIntroOverlayProps) {
-  const [isVisible, setIsVisible] = useState(false);
   const [isFinished, setIsFinished] = useState(false);
   const [isMuted, setIsMuted] = useState(false); // Start unmuted to try autoplay with sound
   const videoRef = useRef<HTMLVideoElement>(null);
   const prefersReducedMotion = useReducedMotion();
 
-  // Show overlay when opened (no sessionStorage check - always show!)
+  // Attempt to play the video once the overlay is on screen
   useEffect(() => {
-    if (isOpen) {
-      devLog('[RoofMate Intro] Opening overlay');
-      setIsVisible(true);
-      setIsFinished(false);
-    }
-  }, [isOpen]);
+    if (!isOpen) return;
 
-  // Attempt to play video when visible
-  useEffect(() => {
-    if (!isVisible || !videoRef.current) return;
-
+    devLog('[RoofMate Intro] Opening overlay');
     const video = videoRef.current;
-    devLog('[RoofMate Intro] Video element ready, attempting play', {
-      src: video.src,
-      readyState: video.readyState,
-      networkState: video.networkState
-    });
 
     // Small delay to ensure video element is fully mounted
-    const timer = setTimeout(() => {
-      // Try unmuted first
-      video.muted = false;
-      const playPromise = video.play();
-      
-      if (playPromise !== undefined) {
-        playPromise
-          .then(() => {
-            devLog('[RoofMate Intro] Video autoplay started successfully (unmuted)');
-            setIsMuted(false);
-          })
-          .catch((error) => {
-            console.warn('[RoofMate Intro] Unmuted autoplay blocked, trying muted:', error.message);
-            // If autoplay fails, try muted
-            video.muted = true;
-            setIsMuted(true);
-            video.play()
-              .then(() => devLog('[RoofMate Intro] Video playing (muted)'))
-              .catch(err => {
-                console.error('[RoofMate Intro] Muted autoplay also failed:', err.message);
+    const timer = video
+      ? setTimeout(() => {
+          // Try unmuted first
+          video.muted = false;
+          const playPromise = video.play();
+
+          if (playPromise !== undefined) {
+            playPromise
+              .then(() => {
+                devLog('[RoofMate Intro] Video autoplay started successfully (unmuted)');
+                setIsMuted(false);
+              })
+              .catch((error) => {
+                console.warn('[RoofMate Intro] Unmuted autoplay blocked, trying muted:', error.message);
+                // If autoplay fails, try muted
+                video.muted = true;
+                setIsMuted(true);
+                video.play()
+                  .then(() => devLog('[RoofMate Intro] Video playing (muted)'))
+                  .catch(err => {
+                    console.error('[RoofMate Intro] Muted autoplay also failed:', err.message);
+                  });
               });
-          });
-      }
-    }, 150);
+          }
+        }, 150)
+      : undefined;
 
-    return () => clearTimeout(timer);
-  }, [isVisible]);
-
-  // Reset when modal closes
-  useEffect(() => {
-    if (!isOpen) {
-      setIsVisible(false);
+    return () => {
+      if (timer !== undefined) clearTimeout(timer);
       setIsFinished(false);
       setIsMuted(false);
-    }
+    };
   }, [isOpen]);
 
   const handleSkip = () => {
@@ -87,20 +70,14 @@ export default function RoofMateIntroOverlay({
     }
     setIsFinished(true);
     // Fade out then close
-    setTimeout(() => {
-      setIsVisible(false);
-      onClose();
-    }, 300);
+    setTimeout(onClose, 300);
   };
 
   const handleVideoEnded = () => {
     devLog('[RoofMate Intro] Video ended naturally');
     setIsFinished(true);
     // Fade out then close
-    setTimeout(() => {
-      setIsVisible(false);
-      onClose();
-    }, 500);
+    setTimeout(onClose, 500);
   };
 
   const toggleMute = () => {
@@ -112,13 +89,13 @@ export default function RoofMateIntroOverlay({
     }
   };
 
-  if (!isOpen || !isVisible) {
+  if (!isOpen) {
     return null;
   }
 
   return (
     <AnimatePresence>
-      {isVisible && (
+      {isOpen && (
         <motion.div
           initial={prefersReducedMotion ? false : { opacity: 0 }}
           animate={prefersReducedMotion ? {} : { opacity: 1 }}

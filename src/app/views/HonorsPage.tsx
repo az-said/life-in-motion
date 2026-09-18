@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useMemo } from "react";
 import { useSearchParams } from "react-router-dom";
 import { motion } from "framer-motion";
 import { honors } from "../../content/items/honors";
@@ -16,31 +16,32 @@ import Container from "../../components/layout/Container";
 
 export default function HonorsPage() {
   const [searchParams, setSearchParams] = useSearchParams();
-  const [selectedItem, setSelectedItem] = useState<ContentItem | null>(null);
-  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [clickedItem, setClickedItem] = useState<ContentItem | null>(null);
+  const [isClosing, setIsClosing] = useState(false);
   const prefersReducedMotion = useReducedMotion();
 
-  // Handle focus query param (from Story linked items)
-  useEffect(() => {
-    const focusId = searchParams.get("focus");
-    if (focusId) {
-      const item = getItemById(focusId);
-      if (item && item.type === "honor") {
-        setSelectedItem(item);
-        setIsModalOpen(true);
-      }
-    }
-  }, [searchParams]);
+  // The focus query param (from Story linked items) is read during render
+  // rather than copied into state by an effect.
+  const focusId = searchParams.get("focus");
+  const focusedItem = useMemo(() => {
+    if (!focusId) return null;
+    const item = getItemById(focusId);
+    return item && item.type === "honor" ? item : null;
+  }, [focusId]);
+
+  const selectedItem = clickedItem ?? focusedItem;
+  const isModalOpen = selectedItem !== null && !isClosing;
 
   const handleItemClick = (item: ContentItem) => {
-    setSelectedItem(item);
-    setIsModalOpen(true);
+    setIsClosing(false);
+    setClickedItem(item);
   };
 
   const handleCloseModal = () => {
-    setIsModalOpen(false);
+    setIsClosing(true);
     setTimeout(() => {
-      setSelectedItem(null);
+      setClickedItem(null);
+      setIsClosing(false);
       // Remove focus from URL
       const newParams = new URLSearchParams(searchParams);
       newParams.delete("focus");

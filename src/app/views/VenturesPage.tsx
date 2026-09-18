@@ -1,4 +1,4 @@
-import { useState, useMemo, useEffect } from "react";
+import { useState, useMemo } from "react";
 import { useSearchParams } from "react-router-dom";
 import { motion } from "framer-motion";
 import { FileText } from "lucide-react";
@@ -16,49 +16,44 @@ import { useReducedMotion } from "../../hooks/useReducedMotion";
 import Container from "../../components/layout/Container";
 import HeroMedia from "../../components/HeroMedia";
 
+// Separate flagship (RoofMate, PVL) from others
+const FLAGSHIP_IDS = ["roofmate", "pvl-internship"];
+const flagship = ventures.filter((v) => FLAGSHIP_IDS.includes(v.id));
+const others = ventures.filter((v) => !FLAGSHIP_IDS.includes(v.id));
+
 export default function VenturesPage() {
   const [searchParams, setSearchParams] = useSearchParams();
-  const [selectedItem, setSelectedItem] = useState<ContentItem | null>(null);
-  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [clickedItem, setClickedItem] = useState<ContentItem | null>(null);
+  const [isClosing, setIsClosing] = useState(false);
 
-  // Handle focus query param (from Story linked items)
-  useEffect(() => {
-    const focusId = searchParams.get("focus");
-    if (focusId) {
-      const item = getItemById(focusId);
-      if (item && item.type === "venture") {
-        setSelectedItem(item);
-        setIsModalOpen(true);
-      }
-    }
-  }, [searchParams]);
+  // The focus query param (from Story linked items) is read during render
+  // rather than copied into state by an effect.
+  const focusId = searchParams.get("focus");
+  const focusedItem = useMemo(() => {
+    if (!focusId) return null;
+    const item = getItemById(focusId);
+    return item && item.type === "venture" ? item : null;
+  }, [focusId]);
+
+  const selectedItem = clickedItem ?? focusedItem;
+  const isModalOpen = selectedItem !== null && !isClosing;
 
   const handleOpenCaseFile = (item: ContentItem) => {
-    setSelectedItem(item);
-    setIsModalOpen(true);
+    setIsClosing(false);
+    setClickedItem(item);
   };
 
   const handleCloseModal = () => {
-    setIsModalOpen(false);
+    setIsClosing(true);
     setTimeout(() => {
-      setSelectedItem(null);
+      setClickedItem(null);
+      setIsClosing(false);
       // Remove focus from URL
       const newParams = new URLSearchParams(searchParams);
       newParams.delete("focus");
       setSearchParams(newParams);
     }, 300);
   };
-
-  // Separate flagship (RoofMate, PVL) from others
-  const flagshipIds = ["roofmate", "pvl-internship"];
-  const flagship = useMemo(() => 
-    ventures.filter(v => flagshipIds.includes(v.id)),
-    []
-  );
-  const others = useMemo(() => 
-    ventures.filter(v => !flagshipIds.includes(v.id)),
-    []
-  );
 
   return (
     <>
@@ -92,7 +87,6 @@ export default function VenturesPage() {
               venture={venture}
               index={index}
               onOpenCaseFile={handleOpenCaseFile}
-              isFlagship={true}
             />
           ))}
         </div>
@@ -131,14 +125,12 @@ interface VentureSectionProps {
   venture: ContentItem;
   index: number;
   onOpenCaseFile: (venture: ContentItem) => void;
-  isFlagship: boolean;
 }
 
 function VentureSection({
   venture,
   index,
   onOpenCaseFile,
-  isFlagship: _isFlagship,
 }: VentureSectionProps) {
   const isEven = index % 2 === 0;
   const prefersReducedMotion = useReducedMotion();

@@ -18,8 +18,8 @@ import AtlasTimelineGrid from "../../components/atlas/AtlasTimelineGrid";
 
 export default function AtlasPage() {
   const [searchParams, setSearchParams] = useSearchParams();
-  const [selectedItem, setSelectedItem] = useState<ContentItem | null>(null);
-  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [clickedItem, setClickedItem] = useState<ContentItem | null>(null);
+  const [isClosing, setIsClosing] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedTags, setSelectedTags] = useState<Set<Tag>>(new Set());
   const prefersReducedMotion = useReducedMotion();
@@ -68,17 +68,16 @@ export default function AtlasPage() {
     };
   }, []);
 
-  // Handle URL params for focus
-  useEffect(() => {
-    const focus = searchParams.get("focus");
-    if (focus) {
-      const experience = experiences.find((e) => e.id === focus);
-      if (experience && !isModalOpen) {
-        setSelectedItem(experience);
-        setIsModalOpen(true);
-      }
-    }
-  }, [searchParams, isModalOpen]);
+  // The focus query param (from Story linked items) is read during render
+  // rather than copied into state by an effect.
+  const focusId = searchParams.get("focus");
+  const focusedItem = useMemo(
+    () => (focusId ? experiences.find((e) => e.id === focusId) ?? null : null),
+    [focusId]
+  );
+
+  const selectedItem = clickedItem ?? focusedItem;
+  const isModalOpen = selectedItem !== null && !isClosing;
 
   // Filter experiences based on search and tags
   const filteredExperiences = useMemo(() => {
@@ -118,15 +117,16 @@ export default function AtlasPage() {
   };
 
   const handleExperienceClick = (experience: ContentItem) => {
-    setSelectedItem(experience);
-    setIsModalOpen(true);
+    setIsClosing(false);
+    setClickedItem(experience);
     setSearchParams({ focus: experience.id });
   };
 
   const handleCloseModal = () => {
-    setIsModalOpen(false);
+    setIsClosing(true);
     setTimeout(() => {
-      setSelectedItem(null);
+      setClickedItem(null);
+      setIsClosing(false);
       const newParams = new URLSearchParams(searchParams);
       newParams.delete("focus");
       setSearchParams(newParams);

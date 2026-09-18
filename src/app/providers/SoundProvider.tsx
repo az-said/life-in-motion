@@ -1,23 +1,12 @@
-import { createContext, useContext, useState, useEffect, useRef, useCallback } from "react";
+import { useState, useEffect, useRef, useCallback } from "react";
 import type { ReactNode } from "react";
 import { useReducedMotion } from "../../hooks/useReducedMotion";
-
-const SFX_STORAGE_KEY = "sfxMuted";
-
-export type SFXType = "click" | "hover" | "transition";
-
-interface SoundContextValue {
-  isEnabled: boolean; // true when sound is enabled (not muted)
-  toggleSound: () => void;
-  hasUserInteracted: boolean;
-  play: (type: SFXType) => void;
-  // Legacy functions (deprecated, use play() instead)
-  playTick: () => void;
-  playConfirm: () => void;
-  playSoftBlip: () => void;
-}
-
-const SoundContext = createContext<SoundContextValue | undefined>(undefined);
+import {
+  SFX_STORAGE_KEY,
+  SoundContext,
+  type SFXType,
+  type SoundContextValue,
+} from "./soundContext";
 
 interface SoundProviderProps {
   children: ReactNode;
@@ -34,7 +23,12 @@ interface SoundProviderProps {
  */
 export function SoundProvider({ children }: SoundProviderProps) {
   const prefersReducedMotion = useReducedMotion();
-  const [isEnabled, setIsEnabled] = useState(false);
+  // Read the persisted preference up front: mirroring localStorage into state
+  // from an effect cost an extra render on every mount.
+  // localStorage: "sfxMuted" = "1" (muted) or "0" (enabled)
+  const [isEnabled, setIsEnabled] = useState(
+    () => localStorage.getItem(SFX_STORAGE_KEY) !== "1" && !prefersReducedMotion
+  );
   const [hasUserInteracted, setHasUserInteracted] = useState(false);
   const audioContextRef = useRef<AudioContext | null>(null);
   const audioBuffersRef = useRef<{ [key: string]: AudioBuffer }>({});
@@ -48,16 +42,8 @@ export function SoundProvider({ children }: SoundProviderProps) {
     return audioContextRef.current;
   }, []);
 
-  // Load persisted sound preference
-  // localStorage: "sfxMuted" = "1" (muted) or "0" (enabled)
+  // Track user interaction for autoplay restrictions
   useEffect(() => {
-    const saved = localStorage.getItem(SFX_STORAGE_KEY);
-    // "1" means muted (disabled), "0" or null means enabled
-    const isMuted = saved === "1";
-    const shouldEnable = !isMuted && !prefersReducedMotion;
-    setIsEnabled(shouldEnable);
-
-    // Track user interaction for autoplay restrictions
     const handleInteraction = () => {
       setHasUserInteracted(true);
       // Resume audio context if needed (browser autoplay policy)
@@ -79,7 +65,7 @@ export function SoundProvider({ children }: SoundProviderProps) {
       window.removeEventListener("keydown", handleInteraction);
       window.removeEventListener("touchstart", handleInteraction);
     };
-  }, [prefersReducedMotion, getAudioContext]);
+  }, [getAudioContext]);
 
   // Throttle refs for different sound types
   const lastHoverTimeRef = useRef(0);
@@ -212,7 +198,7 @@ export function SoundProvider({ children }: SoundProviderProps) {
           oscillator.stop(ctx.currentTime + 0.15);
         }
       }
-    } catch (error) {
+    } catch {
       // Silently fail if audio is not available
     }
   }, [isEnabled, hasUserInteracted, prefersReducedMotion, getAudioContext]);
@@ -251,16 +237,5 @@ export function SoundProvider({ children }: SoundProviderProps) {
   };
 
   return <SoundContext.Provider value={value}>{children}</SoundContext.Provider>;
-}
-
-/**
- * Hook to access sound context
- */
-export function useSound(): SoundContextValue {
-  const context = useContext(SoundContext);
-  if (context === undefined) {
-    throw new Error("useSound must be used within a SoundProvider");
-  }
-  return context;
 }
 

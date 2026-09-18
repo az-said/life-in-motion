@@ -33,7 +33,7 @@
 import { useState, useEffect, useRef, useCallback } from "react";
 import { INTRO_GATE, type IntroStep } from "../../content/intro";
 import { useReducedMotion } from "../../hooks/useReducedMotion";
-import { useSound } from "../../app/providers/SoundProvider";
+import { useSound } from "../../app/providers/soundContext";
 import { clsx } from "clsx";
 import { motion } from "framer-motion";
 import {

@@ -62,8 +62,8 @@ class ScrollLockManager {
         const outer = document.createElement('div');
         outer.style.visibility = 'hidden';
         outer.style.overflow = 'scroll';
-        // Type assertion for msOverflowStyle (IE-specific, but harmless)
-        (outer.style as any).msOverflowStyle = 'scrollbar';
+        // msOverflowStyle is IE/legacy-Edge only, so it is absent from CSSStyleDeclaration
+        (outer.style as CSSStyleDeclaration & { msOverflowStyle: string }).msOverflowStyle = 'scrollbar';
         outer.style.position = 'absolute';
         outer.style.width = '100px';
         outer.style.height = '100px';

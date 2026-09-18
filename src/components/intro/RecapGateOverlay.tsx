@@ -29,18 +29,21 @@ interface RecapGateOverlayProps {
 
 type Phase = "RECAP" | "WELCOME";
 
+const WELCOME_TEXT = "Welcome to my world";
+const TYPING_SPEED_MS = 100; // Slow typing speed
+
 export default function RecapGateOverlay({ onComplete, onSkip, onMountChange }: RecapGateOverlayProps) {
   const prefersReducedMotion = useReducedMotion();
   const [shouldShow, setShouldShow] = useState(true);
   const [phase, setPhase] = useState<Phase>("RECAP");
-  const [welcomeText, setWelcomeText] = useState("");
-  const [isTyping, setIsTyping] = useState(false);
+  const [typedCount, setTypedCount] = useState(0);
   const [cursorVisible, setCursorVisible] = useState(true);
   const timeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
-  const charIndexRef = useRef(0);
 
-  const WELCOME_TEXT = "Welcome to my world";
-  const TYPING_SPEED_MS = 100; // Slow typing speed
+  // Reduced motion skips straight to the full line, so both the visible text and
+  // the typing flag follow from how many characters have been revealed.
+  const welcomeText = prefersReducedMotion ? WELCOME_TEXT : WELCOME_TEXT.slice(0, typedCount);
+  const isTyping = phase === "WELCOME" && !prefersReducedMotion && typedCount < WELCOME_TEXT.length;
 
   useEffect(() => {
     devLog("[RecapGateOverlay] MOUNTED");
@@ -79,47 +82,42 @@ export default function RecapGateOverlay({ onComplete, onSkip, onMountChange }: 
     }
   
     if (prefersReducedMotion) {
-      setWelcomeText(WELCOME_TEXT);
-      setIsTyping(false);
       // Navigate immediately - AnimatePresence will handle exit animation
       onComplete();
       return;
     }
-  
-    setIsTyping(true);
-    charIndexRef.current = 0;
-    setWelcomeText("");
-  
+
+    let charIndex = 0;
+
     const typeNextChar = () => {
-      if (charIndexRef.current >= WELCOME_TEXT.length) {
-        setIsTyping(false);
+      if (charIndex >= WELCOME_TEXT.length) {
         // Navigate immediately after typing completes
         onComplete();
         return;
       }
-  
-      const char = WELCOME_TEXT[charIndexRef.current];
-      setWelcomeText((prev) => prev + char);
-      charIndexRef.current++;
-  
+
+      charIndex++;
+      setTypedCount(charIndex);
+
       timeoutRef.current = setTimeout(typeNextChar, TYPING_SPEED_MS);
     };
-  
+
     timeoutRef.current = setTimeout(typeNextChar, 800);
-  
+
     return () => {
       if (timeoutRef.current) {
         clearTimeout(timeoutRef.current);
       }
+      setTypedCount(0);
     };
   }, [phase, prefersReducedMotion, onComplete]);
 
-  const handleSkip = () => {
+  const handleSkip = useCallback(() => {
     // Immediately set localStorage via onSkip (must happen before any fade-out)
     onSkip();
     // Trigger exit animation - AnimatePresence handles fade-out
     setShouldShow(false);
-  };
+  }, [onSkip]);
 
   // Handle keyboard shortcuts
   useEffect(() => {
@@ -134,7 +132,7 @@ export default function RecapGateOverlay({ onComplete, onSkip, onMountChange }: 
 
     window.addEventListener("keydown", handleKeyDown);
     return () => window.removeEventListener("keydown", handleKeyDown);
-  }, [phase, handleRecapCTA]);
+  }, [phase, handleRecapCTA, handleSkip]);
 
   return (
     <AnimatePresence>

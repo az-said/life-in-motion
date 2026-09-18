@@ -4,7 +4,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { clsx } from "clsx";
 import { createNavLogger } from "../../utils/navigation";
 import { useScrollContainerLock } from "../../hooks/useScrollContainerLock";
-import { useSound } from "../../app/providers/SoundProvider";
+import { useSound } from "../../app/providers/soundContext";
 
 /**
  * The site's only navigation surface: a panel anchored under the header's menu

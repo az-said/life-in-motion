@@ -9,7 +9,7 @@ import SEOHead from "../ui/SEOHead";
 import { createNavLogger } from "../../utils/navigation";
 import PageFooter from "../layout/PageFooter";
 import MobileScrollAffordance from "./MobileScrollAffordance";
-import { useSound } from "../../app/providers/SoundProvider";
+import { useSound } from "../../app/providers/soundContext";
 import { devLog } from "../../utils/devLog";
 
 interface StoryShellProps {

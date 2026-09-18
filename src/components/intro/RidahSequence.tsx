@@ -52,8 +52,10 @@ export default function RidahSequence({ onComplete }: RidahSequenceProps) {
   const [hasStarted, setHasStarted] = useState(false);
   
   // Reveal stage for breathe phase (0 = blank, 1 = photo, 2 = balloon, 3 = quote, 4 = hint text)
-  const [revealStage, setRevealStage] = useState<0 | 1 | 2 | 3 | 4>(0);
-  
+  const [timedRevealStage, setTimedRevealStage] = useState<0 | 1 | 2 | 3 | 4>(0);
+  // Reduced motion skips the staged reveal and shows the finished frame at once.
+  const revealStage = prefersReducedMotion ? 4 : timedRevealStage;
+
   // Pointer activity for controls visibility
   const [pointerActive, setPointerActive] = useState(false);
   const pointerActivityTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
@@ -67,21 +69,26 @@ export default function RidahSequence({ onComplete }: RidahSequenceProps) {
   const [waitingForUser, setWaitingForUser] = useState(false);
   
   // Balloon state
-  const [showBalloon, setShowBalloon] = useState(false);
+  const [showBalloon, setShowBalloon] = useState(prefersReducedMotion);
   const [isIrisEntering, setIsIrisEntering] = useState(false);
 
   // Control dock state
-  const [controlDockVisible, setControlDockVisible] = useState(false);
-  const [controlDockOpacity, setControlDockOpacity] = useState(0.65);
+  // The dock's own fade is the only timer-driven part; whether it is shown at
+  // all follows from pointer activity, reveal stage and hover.
+  const [dockFade, setDockFade] = useState<"full" | "dim" | "hidden">("full");
+  const [dockWakeToken, setDockWakeToken] = useState(0);
   const [controlDockHovered, setControlDockHovered] = useState(false);
-  const controlDockFadeTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const lastUIBlipTimeRef = useRef(0);
 
   // Portrait background state (wide screens only)
   const [isWideEnough, setIsWideEnough] = useState(false);
 
-  // Sound state - default ON (UI), but only plays after first user action
-  const [soundEnabled, setSoundEnabled] = useState(true);
+  // Sound state - default ON (UI), but only plays after first user action.
+  // The stored preference is read up front so the first render already has it.
+  const [soundEnabled, setSoundEnabled] = useState(() => {
+    const saved = localStorage.getItem(KEYBOARD_SOUND_STORAGE_KEY);
+    return saved === null || saved === "1";
+  });
   const [hasUserInteracted, setHasUserInteracted] = useState(false);
   const lastTickTimeRef = useRef(0);
   const audioBuffersRef = useRef<{ [key: string]: AudioBuffer }>({});
@@ -92,6 +99,10 @@ export default function RidahSequence({ onComplete }: RidahSequenceProps) {
   const timeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const rafRef = useRef<number | null>(null);
   const currentStepRef = useRef<RidahStep | null>(null);
+
+  // Render-safe mirror of currentStepRef: processStep writes the step at
+  // currentStepIndex, so the index already carries that information.
+  const activeStep = RIDAH_INTRO_SEQUENCE[currentStepIndex] ?? null;
 
   // Stable IDs for completed lines (prevents remount/layout jitter)
   const nextLineIdRef = useRef(0);
@@ -127,7 +138,7 @@ export default function RidahSequence({ onComplete }: RidahSequenceProps) {
 
   // Initialize audio context
   const getAudioContext = useCallback(() => {
-    if (!audioContextRef.current && typeof window !== "undefined" && (window as any).AudioContext) {
+    if (!audioContextRef.current && typeof window !== "undefined" && window.AudioContext) {
       audioContextRef.current = new AudioContext();
     }
     return audioContextRef.current;
@@ -282,13 +293,6 @@ export default function RidahSequence({ onComplete }: RidahSequenceProps) {
     [soundEnabled, hasUserInteracted, prefersReducedMotion, getAudioContext]
   );
 
-  // Load sound preference (default ON)
-  useEffect(() => {
-    const saved = localStorage.getItem(KEYBOARD_SOUND_STORAGE_KEY);
-    const shouldEnable = saved === null || saved === "1";
-    setSoundEnabled(shouldEnable);
-  }, []);
-
   const toggleSound = useCallback(() => {
     const newValue = !soundEnabled;
     setSoundEnabled(newValue);
@@ -358,46 +362,32 @@ export default function RidahSequence({ onComplete }: RidahSequenceProps) {
 
   // Reveal stage management for breathe phase
   useEffect(() => {
-    if (phase !== "breathe" || hasStarted) {
-      // Reset reveal stage when leaving breathe phase
-      if (phase !== "breathe") {
-        setRevealStage(0);
-      }
-      return;
-    }
-
-    // Skip stages for reduced motion
-    if (prefersReducedMotion) {
-      setRevealStage(4);
-      setShowBalloon(true);
-      return;
-    }
+    if (phase !== "breathe" || hasStarted || prefersReducedMotion) return;
 
     // Stage 0: blank paper (already set)
-    setRevealStage(0);
-    
     // Stage 1: show photo (200ms)
-    const t1 = setTimeout(() => setRevealStage(1), 200);
-    
+    const t1 = setTimeout(() => setTimedRevealStage(1), 200);
+
     // Stage 2: show balloon + hint (900ms)
     const t2 = setTimeout(() => {
-      setRevealStage(2);
+      setTimedRevealStage(2);
       setShowBalloon(true);
     }, 900);
-    
+
     // Stage 3: show quote lines (2000ms)
-    const t3 = setTimeout(() => setRevealStage(3), 2000);
-    
+    const t3 = setTimeout(() => setTimedRevealStage(3), 2000);
+
     // Stage 4: show hint text after all quotes finish
     // Quotes start at 2000ms, last quote (index 5) appears at 2000 + (5 * 700) = 5500ms
     // Plus fade duration of 400ms = 5900ms total, so show hint at 6000ms
-    const t4 = setTimeout(() => setRevealStage(4), 6000);
-    
+    const t4 = setTimeout(() => setTimedRevealStage(4), 6000);
+
     return () => {
       clearTimeout(t1);
       clearTimeout(t2);
       clearTimeout(t3);
       clearTimeout(t4);
+      setTimedRevealStage(0);
     };
   }, [phase, hasStarted, prefersReducedMotion]);
 
@@ -430,99 +420,88 @@ export default function RidahSequence({ onComplete }: RidahSequenceProps) {
   }, []);
 
 
-  // Control dock: show on pointer activity OR after reveal stage 2
+  // Control dock: fade out after a spell of inactivity. Hover, breathe-phase
+  // pointer movement and an explicit wake all keep it at full opacity.
   useEffect(() => {
     const controlsVisible = pointerActive || revealStage >= 2;
-    
-    if (controlsVisible) {
-      setControlDockVisible(true);
-      setControlDockOpacity(0.65);
-      
-      // Reset inactivity timer
-      if (controlDockFadeTimeoutRef.current) {
-        clearTimeout(controlDockFadeTimeoutRef.current);
-      }
-      
-      // Only auto-hide if not in breathe phase or if pointer is inactive
-      if (phase !== "breathe" || !pointerActive) {
-        const inactivityDelay = 1200 + Math.random() * 400;
-        controlDockFadeTimeoutRef.current = setTimeout(() => {
-          if (!controlDockHovered && !pointerActive) {
-            setControlDockOpacity(0.08);
-            setTimeout(() => {
-              if (!controlDockHovered && !pointerActive) {
-                setControlDockVisible(false);
-              }
-            }, 300);
-          }
-        }, inactivityDelay);
-      }
-    } else {
-      // Hide controls if not visible
-      setControlDockVisible(false);
-      setControlDockOpacity(0);
-    }
-  }, [pointerActive, revealStage, phase, controlDockHovered]);
+    if (!controlsVisible || controlDockHovered) return;
+    if (phase === "breathe" && pointerActive) return;
 
-  // Keep dock visible when hovered/focused
-  useEffect(() => {
-    if (controlDockHovered) {
-      setControlDockVisible(true);
-      setControlDockOpacity(0.65);
-      if (controlDockFadeTimeoutRef.current) {
-        clearTimeout(controlDockFadeTimeoutRef.current);
-        controlDockFadeTimeoutRef.current = null;
-      }
-    }
-  }, [controlDockHovered]);
+    const inactivityDelay = 1200 + Math.random() * 400;
+    let hideTimer: ReturnType<typeof setTimeout> | undefined;
+
+    const fadeTimer = setTimeout(() => {
+      setDockFade("dim");
+      hideTimer = setTimeout(() => setDockFade("hidden"), 300);
+    }, inactivityDelay);
+
+    return () => {
+      clearTimeout(fadeTimer);
+      if (hideTimer !== undefined) clearTimeout(hideTimer);
+      setDockFade("full");
+    };
+  }, [pointerActive, revealStage, phase, controlDockHovered, dockWakeToken]);
+
+  // Restart the fade countdown and bring the dock back to full opacity
+  const wakeControlDock = useCallback(() => {
+    setDockFade("full");
+    setDockWakeToken((token) => token + 1);
+  }, []);
 
   // Type character by character
   const typeText = useCallback(
     (step: RidahStep, text: string, index: number) => {
       if (step.type !== "type") return;
-      
-      if (index >= text.length) {
-        setCurrentLine(text);
-        setIsTyping(false);
-        
-        // Keep line white for a moment before advancing
-        const whiteHoldDuration = prefersReducedMotion ? 600 : 1000;
-        
-        if (step.actEnd) {
-          const pauseDuration = prefersReducedMotion ? 800 : 1200;
-          timeoutRef.current = setTimeout(() => setWaitingForUser(true), pauseDuration);
-        } else {
-          const pauseDuration = Math.max(900, step.pauseAfterMs || 1200);
-          // Add white hold duration before advancing
-          timeoutRef.current = setTimeout(() => {
-            advanceStep(text, false, pauseDuration);
-          }, whiteHoldDuration);
+
+      // The per-character walk recurses through a local binding rather than
+      // through `typeText` itself, which would read the callback variable
+      // before it is assigned.
+      const typeCharAt = (charIndex: number) => {
+        if (charIndex >= text.length) {
+          setCurrentLine(text);
+          setIsTyping(false);
+
+          // Keep line white for a moment before advancing
+          const whiteHoldDuration = prefersReducedMotion ? 600 : 1000;
+
+          if (step.actEnd) {
+            const pauseDuration = prefersReducedMotion ? 800 : 1200;
+            timeoutRef.current = setTimeout(() => setWaitingForUser(true), pauseDuration);
+          } else {
+            const pauseDuration = Math.max(900, step.pauseAfterMs || 1200);
+            // Add white hold duration before advancing
+            timeoutRef.current = setTimeout(() => {
+              advanceStep(text, false, pauseDuration);
+            }, whiteHoldDuration);
+          }
+          return;
         }
-        return;
-      }
 
-      const char = text[index];
-      const newText = text.slice(0, index + 1);
-      const typedSoFar = text.slice(0, index);
+        const char = text[charIndex];
+        const newText = text.slice(0, charIndex + 1);
+        const typedSoFar = text.slice(0, charIndex);
 
-      setCurrentLine(newText);
+        setCurrentLine(newText);
 
-      const isPunctuation = /[.,!?;:…]/.test(char);
-      playTick(isPunctuation);
+        const isPunctuation = /[.,!?;:…]/.test(char);
+        playTick(isPunctuation);
 
-      const baseSpeed = step.speedMs || GLOBAL_SPEED_MS;
-      const variance = step.varianceMs || GLOBAL_VARIANCE_MS;
-      const randomVariance = (Math.random() * 2 - 1) * variance;
-      let delay = Math.max(10, baseSpeed + randomVariance);
+        const baseSpeed = step.speedMs || GLOBAL_SPEED_MS;
+        const variance = step.varianceMs || GLOBAL_VARIANCE_MS;
+        const randomVariance = (Math.random() * 2 - 1) * variance;
+        let delay = Math.max(10, baseSpeed + randomVariance);
 
-      const punctuationPause = getPunctuationPause(char, typedSoFar);
-      if (punctuationPause > 0) delay += punctuationPause;
+        const punctuationPause = getPunctuationPause(char, typedSoFar);
+        if (punctuationPause > 0) delay += punctuationPause;
 
-      rafRef.current = requestAnimationFrame(() => {
-        timeoutRef.current = setTimeout(() => {
-          typeText(step, text, index + 1);
-        }, delay);
-      });
+        rafRef.current = requestAnimationFrame(() => {
+          timeoutRef.current = setTimeout(() => {
+            typeCharAt(charIndex + 1);
+          }, delay);
+        });
+      };
+
+      typeCharAt(index);
     },
     [prefersReducedMotion, advanceStep, playTick]
   );
@@ -600,6 +579,11 @@ export default function RidahSequence({ onComplete }: RidahSequenceProps) {
   useLayoutEffect(() => {
     if (phase === "typing") {
       clearTimers();
+      // processStep drives an imperative timeline (typing, act transitions,
+      // pauses) rather than deriving a value, and it has to commit the first
+      // frame of a step before paint or the previous line flashes. There is no
+      // render-time derivation that preserves that.
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       processStep();
     }
     return () => clearTimers();
@@ -610,12 +594,7 @@ export default function RidahSequence({ onComplete }: RidahSequenceProps) {
     const handleKeyDown = (e: KeyboardEvent) => {
       // Show dock on Escape or Tab (keyboard navigation)
       if (e.key === "Escape" || e.key === "Tab") {
-        setControlDockVisible(true);
-        setControlDockOpacity(0.65);
-        if (controlDockFadeTimeoutRef.current) {
-          clearTimeout(controlDockFadeTimeoutRef.current);
-          controlDockFadeTimeoutRef.current = null;
-        }
+        wakeControlDock();
       if (e.key === "Escape") {
           e.preventDefault();
         }
@@ -702,16 +681,13 @@ export default function RidahSequence({ onComplete }: RidahSequenceProps) {
     hasUserInteracted,
     prefersReducedMotion,
     playUIBlip,
+    wakeControlDock,
   ]);
 
   // Cleanup
   useEffect(() => {
     return () => {
       clearTimers();
-      if (controlDockFadeTimeoutRef.current) {
-        clearTimeout(controlDockFadeTimeoutRef.current);
-        controlDockFadeTimeoutRef.current = null;
-      }
       if (pointerActivityTimeoutRef.current) {
         clearTimeout(pointerActivityTimeoutRef.current);
         pointerActivityTimeoutRef.current = null;
@@ -792,6 +768,9 @@ export default function RidahSequence({ onComplete }: RidahSequenceProps) {
 
   // Controls visibility condition
   const controlsVisible = pointerActive || revealStage >= 2;
+  const controlDockOpacity =
+    controlDockHovered || dockFade === "full" ? 0.65 : dockFade === "dim" ? 0.08 : 0;
+  const controlDockVisible = controlsVisible && (controlDockHovered || dockFade !== "hidden");
 
   return (
     <div
@@ -1256,7 +1235,7 @@ export default function RidahSequence({ onComplete }: RidahSequenceProps) {
           >
             {phase === "breathe" && !hasStarted
               ? "take a breath • press Enter or click"
-              : waitingForUser && currentStepRef.current?.type === "breathe"
+              : waitingForUser && activeStep?.type === "breathe"
               ? "press Enter to continue"
               : "press Enter"}
           </motion.div>
@@ -1308,8 +1287,7 @@ export default function RidahSequence({ onComplete }: RidahSequenceProps) {
             onMouseLeave={() => setControlDockHovered(false)}
             onFocus={() => {
               setControlDockHovered(true);
-              setControlDockVisible(true);
-              setControlDockOpacity(1);
+              wakeControlDock();
             }}
             onBlur={() => setControlDockHovered(false)}
           >
