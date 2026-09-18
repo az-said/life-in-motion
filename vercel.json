@@ -3,12 +3,12 @@
 
   "redirects": [
     {
-      "source": "/:path((?i)cv)",
+      "source": "/:path([cC][vV])",
       "destination": "/Said-Azaizah-CV.pdf",
       "statusCode": 307
     },
     {
-      "source": "/:path((?i)resume)",
+      "source": "/:path([rR][eE][sS][uU][mM][eE])",
       "destination": "/Said-Azaizah-CV.pdf",
       "statusCode": 307
     }
