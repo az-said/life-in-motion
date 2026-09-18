@@ -12,6 +12,7 @@ import { useReducedMotion } from "../../hooks/useReducedMotion";
 import { useScrollContainerLock } from "../../hooks/useScrollContainerLock";
 import MediaCarousel, { buildMediaArray } from "../media/MediaCarousel";
 import RoofMateIntroOverlay from "./RoofMateIntroOverlay";
+import { devLog } from "../../utils/devLog";
 
 interface CaseFileModalProps {
   item: ContentItem | null;
@@ -40,7 +41,7 @@ export default function CaseFileModal({
   const [introHasBeenShown, setIntroHasBeenShown] = useState(false);
   
   useEffect(() => {
-    console.log('[DEBUG] Modal opened:', { 
+    devLog('[DEBUG] Modal opened:', { 
       isOpen, 
       itemId: item?.id, 
       itemTitle: item?.title,
@@ -50,7 +51,7 @@ export default function CaseFileModal({
     
     // Show intro for RoofMate only if not already shown in this modal session
     if (isOpen && item?.id === "roofmate" && !introHasBeenShown) {
-      console.log('[DEBUG] Showing RoofMate intro');
+      devLog('[DEBUG] Showing RoofMate intro');
       setShowRoofMateIntro(true);
     } else if (!isOpen) {
       // Reset when modal closes completely
@@ -60,7 +61,7 @@ export default function CaseFileModal({
   }, [isOpen, item?.id, introHasBeenShown]);
 
   const handleIntroClose = () => {
-    console.log('[DEBUG] Intro closing');
+    devLog('[DEBUG] Intro closing');
     setShowRoofMateIntro(false);
     setIntroHasBeenShown(true); // Mark as shown so it doesn't reopen
   };
@@ -364,7 +365,7 @@ export default function CaseFileModal({
                           {item.id === "roofmate" && (
                             <button
                               onClick={() => {
-                                console.log('[DEBUG] Replaying intro');
+                                devLog('[DEBUG] Replaying intro');
                                 setIntroHasBeenShown(false);
                                 setShowRoofMateIntro(true);
                               }}

@@ -20,7 +20,7 @@ export default function PageFooter() {
           />
           {/* GitHub */}
           <a
-            href="https://github.com/saidaz24-meet/"
+            href="https://github.com/az-said/"
             target="_blank"
             rel="noopener noreferrer"
             className={clsx(

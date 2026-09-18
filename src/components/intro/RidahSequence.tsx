@@ -95,7 +95,25 @@ export default function RidahSequence({ onComplete }: RidahSequenceProps) {
 
   // Stable IDs for completed lines (prevents remount/layout jitter)
   const nextLineIdRef = useRef(0);
-  
+
+  /**
+   * The single exit from this component.
+   *
+   * Two things can fire the handoff — the iris animation reporting completion,
+   * and the timer below as a floor — so it has to be idempotent. Without the
+   * latch a double call would re-enter the parent's transition and restart the
+   * navigation timeout.
+   */
+  const handedOffRef = useRef(false);
+  const handOff = useCallback(() => {
+    if (handedOffRef.current) return;
+    handedOffRef.current = true;
+    onComplete();
+  }, [onComplete]);
+
+  /** Owned by the iris effect alone; clearTimers() must not be able to cancel it. */
+  const irisHandoffTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
   const clearTimers = useCallback(() => {
     if (timeoutRef.current) {
       clearTimeout(timeoutRef.current);
@@ -632,7 +650,7 @@ export default function RidahSequence({ onComplete }: RidahSequenceProps) {
           clearTimers();
           setShowBalloon(false);
 
-          timeoutRef.current = setTimeout(() => onComplete(), prefersReducedMotion ? 400 : 1200);
+          timeoutRef.current = setTimeout(handOff, prefersReducedMotion ? 400 : 1200);
           return;
         }
 
@@ -661,7 +679,7 @@ export default function RidahSequence({ onComplete }: RidahSequenceProps) {
           if (isLastAct) {
             // Last act: go directly to main site, skip breathe step
             clearTimers();
-            onComplete();
+            handOff();
             return;
           }
           // Not last act: advance to next step normally
@@ -678,7 +696,7 @@ export default function RidahSequence({ onComplete }: RidahSequenceProps) {
     hasStarted,
     isTyping,
     waitingForUser,
-    onComplete,
+    handOff,
     clearTimers,
     advanceStep,
     hasUserInteracted,
@@ -718,7 +736,11 @@ export default function RidahSequence({ onComplete }: RidahSequenceProps) {
     "Treat everyone with respect and equality."
   ];
 
-  // Click marks user interaction (for sound policy) and plays blip
+  // Click marks user interaction (for sound policy) and plays blip.
+  // It also starts the gate: people click before they read "press Enter", and a
+  // landing page whose only exit is a keyboard shortcut is a landing page people
+  // leave. Touch devices never reach this screen (see EntryPage), but trackpad
+  // users on laptops absolutely click first.
   const handleClick = useCallback(() => {
     if (!hasUserInteracted) {
       setHasUserInteracted(true);
@@ -726,12 +748,47 @@ export default function RidahSequence({ onComplete }: RidahSequenceProps) {
       // Play blip on click (after first interaction)
       playUIBlip(false);
     }
-  }, [hasUserInteracted, playUIBlip]);
+
+    if (phase === "breathe" && !hasStarted && revealStage >= 2) {
+      clearTimers();
+      setHasStarted(true);
+      setIsIrisEntering(true);
+      setShowBalloon(true);
+    }
+  }, [hasUserInteracted, playUIBlip, phase, hasStarted, revealStage, clearTimers]);
 
   // Iris enter timing - text fades first, then balloon expands
   const textFadeDuration = prefersReducedMotion ? 0.3 : 0.6; // 500-700ms
   const irisDuration = prefersReducedMotion ? 0.6 : 1.2; // 1000-1400ms
   const irisScale = 50; // Large enough to cover viewport
+
+  /**
+   * Hand off to the dashboard once the iris has covered the viewport.
+   *
+   * This is a timer rather than a pure `onAnimationComplete` handoff because
+   * the callback is not a guarantee: the iris starts from a `repeat: Infinity`
+   * breathing keyframe, and when that animation is replaced mid-flight Framer
+   * treats it as an interruption and can skip the completion callback. The
+   * result was a visitor stranded on a black screen at `/` — the iris had
+   * expanded to fill the window and nothing ever navigated.
+   *
+   * So the timer is the contract and `onAnimationComplete` is the fast path;
+   * whichever wins, `handOff` is latched. The duration mirrors the animation
+   * exactly (text fade, then expansion) plus a frame of slack.
+   */
+  useEffect(() => {
+    if (!isIrisEntering) return;
+
+    const coverMs = (textFadeDuration + irisDuration) * 1000 + 120;
+    irisHandoffTimerRef.current = setTimeout(handOff, coverMs);
+
+    return () => {
+      if (irisHandoffTimerRef.current) {
+        clearTimeout(irisHandoffTimerRef.current);
+        irisHandoffTimerRef.current = null;
+      }
+    };
+  }, [isIrisEntering, textFadeDuration, irisDuration, handOff]);
 
   // Controls visibility condition
   const controlsVisible = pointerActive || revealStage >= 2;
@@ -936,12 +993,30 @@ export default function RidahSequence({ onComplete }: RidahSequenceProps) {
                     }
               }
               onAnimationComplete={() => {
-                // When the iris fully covers, we switch to typing cleanly
-                if (isIrisEntering) {
-                  setPhase("typing");
-                  setIsIrisEntering(false);
-                  setShowBalloon(false);
-                }
+                if (!isIrisEntering) return;
+
+                // --- Ridah typing act: DISABLED 2026-09-18 ---------------------
+                // The black-screen typewriter monologue was written for
+                // admissions. A recruiter with a QR code and thirty seconds will
+                // not sit through six acts of prose, and the gate was costing us
+                // the page. The breathe screen stays — it is the memorable part
+                // and it costs one keypress — and the iris now hands straight off
+                // to the dashboard.
+                //
+                // The sequence itself is untouched in src/content/ridahIntro.ts
+                // and the whole typing machinery below is still live code. To
+                // bring it back, restore these three lines and delete the
+                // onComplete() call:
+                //
+                //   setPhase("typing");
+                //   setIsIrisEntering(false);
+                //   setShowBalloon(false);
+                // ----------------------------------------------------------------
+                //
+                // Fast path only. The timer in the iris effect above is what
+                // actually guarantees the handoff; this just skips the slack
+                // when Framer does report completion.
+                handOff();
               }}
               style={{ 
                 transformOrigin: "center center",
@@ -1180,7 +1255,7 @@ export default function RidahSequence({ onComplete }: RidahSequenceProps) {
             }}
           >
             {phase === "breathe" && !hasStarted
-              ? "take a breath • press Enter"
+              ? "take a breath • press Enter or click"
               : waitingForUser && currentStepRef.current?.type === "breathe"
               ? "press Enter to continue"
               : "press Enter"}
@@ -1222,6 +1297,9 @@ export default function RidahSequence({ onComplete }: RidahSequenceProps) {
             exit={{ opacity: 0, y: -6 }}
             transition={{ duration: 0.3, ease: "easeOut" }}
             className="absolute top-0 right-0 z-20 flex items-center gap-3 p-4 md:p-5"
+            // Stop the dock from bubbling into the root click handler, which
+            // would otherwise fire the iris when someone hits Skip or Sound.
+            onClick={(e) => e.stopPropagation()}
             style={{
               pointerEvents: controlsVisible ? "auto" : "none",
               willChange: "opacity, transform",
@@ -1283,7 +1361,7 @@ export default function RidahSequence({ onComplete }: RidahSequenceProps) {
             <button
               onClick={() => {
                 playUIBlip(true);
-                onComplete();
+                handOff();
               }}
               className="flex items-center px-3 py-2 min-h-[36px] md:min-h-[40px] text-sm font-light tracking-wider introSerif transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 rounded-md"
               style={{

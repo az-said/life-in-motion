@@ -2,6 +2,59 @@ import type { ContentItem } from "../types";
 
 export const ALL_ITEMS: ContentItem[] = [
   {
+    // No imagery yet — this one is young and its artifacts are a repo and a
+    // ledger, not photographs. Empty media falls through to a text-only card.
+    "id": "interlock",
+    "type": "venture",
+    "title": "Interlock",
+    "date": "sep 2026 - present",
+    "tags": [
+      "Entrepreneurship",
+      "Craft",
+      "Leadership"
+    ],
+    "privacy": "public",
+    "media": {
+      "heroImage": "",
+      "teaserVideo": "",
+      "youtubeUrl": "",
+      "gallery": []
+    },
+    "card": {
+      "oneLiner": "A commit-gate and receipt layer that makes AI-agent payments at-most-once and auditable.",
+      "headline": "An agent that pays should only pay once",
+      "subhead": "Built for Battle of the Coasts, Cloud AI track.",
+      "microSummary": "Payment-integrity tooling for AI agents, validated against injected faults on live Stripe test mode."
+    },
+    "beats": [
+      "An agent that retries a payment is an agent that pays twice.",
+      "So the gate commits first and settles second.",
+      "Ten injected faults. Plain retry paid wrong in nine. The gate, zero.",
+      "Every published number is reproduced by a script in the repo.",
+      "A number without a ledger entry is filed as a bug."
+    ],
+    "caseFile": {
+      "context": "Interlock is a commit-gate and receipt layer for AI-agent payments. When an autonomous agent is allowed to move money, ordinary retry logic stops being a convenience and becomes a liability: a timeout that looks like a failure is often a success the caller never saw, and the retry pays again. Interlock makes the operation at-most-once and leaves an auditable receipt behind it.",
+      "whatIDid": [
+        "Designed the commit-gate so an intent is recorded before settlement, not after.",
+        "Built a receipt layer that makes every executed payment auditable after the fact.",
+        "Built a fault-injection harness and validated the gate on live Stripe test mode.",
+        "Set up a public claims ledger so every published number maps to a script in the repo."
+      ],
+      "impact": [
+        "Across ten injected faults, plain retry paid wrong nine times; the gate paid wrong zero times.",
+        "Every number the project publishes is reproducible from the repository."
+      ],
+      "evidence": [
+        {
+          "label": "Interlock (live)",
+          "url": "https://interlock-self.vercel.app"
+        }
+      ],
+      "deepDive": "The failure mode is boring and expensive. An agent calls a payment API. The connection drops. The agent cannot tell the difference between \"this never happened\" and \"this happened and I did not hear back.\" So it retries, and the money moves twice.\n\nHumans catch this because a human notices the second charge. An agent running unattended does not, and the whole point of an agent is that it runs unattended.\n\nInterlock inverts the order. The intent is committed before the money moves, so the second attempt finds the first already recorded and declines to act. What comes back is a receipt, not a hope.\n\nThe part I care about most is not the gate, it is the ledger. Anyone can publish a reliability number. We publish a script alongside each one, and if a number appears without a script behind it, we file it as a bug. That rule is uncomfortable on purpose."
+    }
+  },
+  {
     "id": "roofmate",
     "type": "venture",
     "title": "RoofMate",
@@ -25,7 +78,7 @@ export const ALL_ITEMS: ContentItem[] = [
       },
       "demoMedia": {
         "type": "video",
-        "src": "/teasers/roofmate.MP4",
+        "src": "/teasers/roofmate.mp4",
         "label": "RoofMate Demo"
       },
       "heroImage": "/images/life/roofmate/g10-expo-night.jpeg",
@@ -79,7 +132,7 @@ export const ALL_ITEMS: ContentItem[] = [
         },
         {
           "label": "RoofMate Expo Night repo",
-          "url": "https://github.com/saidaz24-meet/RoofMateExpoNight"
+          "url": "https://github.com/az-said/RoofMateExpoNight"
         }
       ],
       "deepDive": "In our region, conflict is loud, but proximity is quiet. Roommates share routines before they share opinions. That reality made roommate matching feel like a real leverage point.\n\nRoofMate started as a simple question: can we help students meet as people first? It quickly became a trust problem. People needed safety, verification, and clarity, not just a swipeable profile.\n\nWe chose an app-first product on purpose. Students prefer mobile onboarding. Verification is easier with a phone camera. Housing windows are time-sensitive. A private chat needs device-level permissions that just work.\n\nMy role was to build and to keep decisions grounded. I cared about the small details that stop people from finishing signup. I cared about what happens after a match, not just before it. That mindset is what made the product feel real."
@@ -270,7 +323,7 @@ export const ALL_ITEMS: ContentItem[] = [
         },
         {
           "label": "Project repo",
-          "url": "https://github.com/saidaz24-meet/HujiHackathon2024"
+          "url": "https://github.com/az-said/HujiHackathon2024"
         }
       ],
       "deepDive": "I did not come to the hackathon looking for a prize. I came with a memory. A waiting room. An elder shrinking in her seat because a form felt like a wall.\n\nWe mapped the journey: find the right form, decode jargon, translate, fill fields, upload files, and hope it submits. I wanted a system that replaces fear with a guided conversation.\n\nMy role was mainly backend and agent logic. I built the orchestration that asks the right questions, keeps state, and generates a clean output.\n\nThe team kept cutting until the demo was undeniable. Winning mattered, but the part I keep is the discipline: ship something real, test it, explain it, and accept feedback in public."
@@ -381,7 +434,7 @@ export const ALL_ITEMS: ContentItem[] = [
       "evidence": [
         {
           "label": "MSSA repo",
-          "url": "https://github.com/saidaz24-meet/meet-session-script-assistant"
+          "url": "https://github.com/az-said/meet-session-script-assistant"
         },
         {
           "label": "Advanced Track letter",
@@ -460,7 +513,7 @@ export const ALL_ITEMS: ContentItem[] = [
     "privacy": "public",
     "media": {
       "heroImage": "/images/life/meet/1d9300b2-2414-473f-90b8-e562e2899c34.JPG",
-      "teaserVideo": "/teasers/meet.mov",
+      "teaserVideo": "/teasers/meet.mp4",
       "youtubeUrl": "",
       "gallery": [
         "/images/life/meet/1d9300b2-2414-473f-90b8-e562e2899c34.JPG",
@@ -554,7 +607,7 @@ export const ALL_ITEMS: ContentItem[] = [
       "evidence": [
         {
           "label": "MSSA repo",
-          "url": "https://github.com/saidaz24-meet/meet-session-script-assistant"
+          "url": "https://github.com/az-said/meet-session-script-assistant"
         }
       ],
       "deepDive": ""

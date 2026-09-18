@@ -19,6 +19,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { useReducedMotion } from "../../hooks/useReducedMotion";
 import { clsx } from "clsx";
 import RecapTimeline from "./RecapTimeline";
+import { devLog } from "../../utils/devLog";
 
 interface RecapGateOverlayProps {
   onComplete: () => void;
@@ -42,10 +43,10 @@ export default function RecapGateOverlay({ onComplete, onSkip, onMountChange }: 
   const TYPING_SPEED_MS = 100; // Slow typing speed
 
   useEffect(() => {
-    console.log("[RecapGateOverlay] MOUNTED");
+    devLog("[RecapGateOverlay] MOUNTED");
     onMountChange?.(true);
     return () => {
-      console.log("[RecapGateOverlay] UNMOUNTED");
+      devLog("[RecapGateOverlay] UNMOUNTED");
       onMountChange?.(false);
       if (timeoutRef.current) {
         clearTimeout(timeoutRef.current);

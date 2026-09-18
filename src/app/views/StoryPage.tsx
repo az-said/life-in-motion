@@ -8,6 +8,7 @@
 import { useEffect, useRef } from "react";
 import StoryShell from "../../components/story/StoryShell";
 import { STORY_TIMELINE_SCENES } from "../../content/storyTimeline";
+import { devLog } from "../../utils/devLog";
 
 export default function StoryPage() {
   const hasMountedRef = useRef(false);
@@ -15,7 +16,7 @@ export default function StoryPage() {
   // DEV log only for first mount
   useEffect(() => {
     if (!hasMountedRef.current && import.meta.env.DEV) {
-      console.log("[StoryPage] FIRST MOUNT");
+      devLog("[StoryPage] FIRST MOUNT");
       hasMountedRef.current = true;
     }
   }, []);

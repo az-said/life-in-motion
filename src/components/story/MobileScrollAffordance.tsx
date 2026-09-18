@@ -6,23 +6,25 @@ import { useReducedMotion } from "../../hooks/useReducedMotion";
 interface MobileScrollAffordanceProps {
   scrollElRef: React.RefObject<HTMLDivElement | null>;
   activeSceneIndex: number;
-  totalScenes?: number; // Optional - kept for future use
 }
 
 /**
- * Deterministic mobile scroll affordance for Story page
- * - Persistent bottom fade + chevron visible when there's more content below
- * - "Swipe up" label shows until user reaches next scene (activeSceneIndex >= 1)
- * - Listens to actual story scroll container, not window
+ * Scroll affordance for the Story page: a bottom fade, a bouncing chevron and
+ * a one-time "Swipe up" label.
+ *
+ * - Shown at every width, not just mobile.
+ * - Reads the story's own scroll container, not the window.
  */
-export default function MobileScrollAffordance({ 
-  scrollElRef, 
-  activeSceneIndex, 
-  totalScenes: _totalScenes 
+export default function MobileScrollAffordance({
+  scrollElRef,
+  activeSceneIndex,
 }: MobileScrollAffordanceProps) {
   const [hasMoreContentBelow, setHasMoreContentBelow] = useState(true);
-  const [showSwipeUpLabel, setShowSwipeUpLabel] = useState(true);
   const prefersReducedMotion = useReducedMotion();
+
+  // Derived, not stored. This was state written from an effect, which meant an
+  // extra render the moment the reader reached scene 1.
+  const showSwipeUpLabel = activeSceneIndex < 1;
 
   // Listen to scroll container to determine if at bottom
   useEffect(() => {
@@ -52,24 +54,8 @@ export default function MobileScrollAffordance({
     };
   }, [scrollElRef]);
 
-  // Hide "Swipe up" label when user reaches next scene (activeSceneIndex >= 1)
-  useEffect(() => {
-    if (activeSceneIndex >= 1) {
-      setShowSwipeUpLabel(false);
-    }
-  }, [activeSceneIndex]);
-
-  // Render on all screen sizes (mobile and desktop)
   return (
-    <div 
-      className="fixed inset-x-0 bottom-0 pointer-events-none z-[9999]"
-      style={{
-        // Position at actual bottom (0) - content extends into safe area
-        bottom: '0',
-        // Dev-only red outline for visibility debugging (remove after verified)
-        outline: import.meta.env.DEV ? '1px solid rgba(255,0,0,0.6)' : 'none',
-      }}
-    >
+    <div className="fixed inset-x-0 bottom-0 pointer-events-none z-[9999]">
       {/* Persistent bottom fade gradient - visible when hasMoreContentBelow */}
       {/* Gradient extends upward from bottom, accounting for safe area */}
       {hasMoreContentBelow && (

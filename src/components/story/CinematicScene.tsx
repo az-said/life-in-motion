@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { ChevronRight, ExternalLink } from "lucide-react";
 import { clsx } from "clsx";
@@ -69,36 +69,46 @@ export default function CinematicScene({
   const navigate = useNavigate();
   const prefersReducedMotion = useReducedMotion();
   const [visibleBeats, setVisibleBeats] = useState(0);
-  const [linkedItems, setLinkedItems] = useState<ContentItem[]>([]);
 
-  // Load linked items
-  useEffect(() => {
-    if (scene.itemIds && Array.isArray(scene.itemIds) && scene.itemIds.length > 0) {
-      const items = scene.itemIds
-        .map((id) => getItemById(id))
-        .filter((item): item is ContentItem => Boolean(item));
-      setLinkedItems(items);
-    } else {
-      setLinkedItems([]);
-    }
+  /**
+   * Linked items are a synchronous lookup, not asynchronous data.
+   *
+   * This was state fed by an effect, which meant every scene mounted, painted
+   * with an empty list, then re-rendered — and the story keeps three to four
+   * scenes mounted at once, so that was three to four wasted render passes on
+   * every scroll. `getItemById` is a plain map read; there is nothing to wait
+   * for.
+   */
+  const linkedItems = useMemo<ContentItem[]>(() => {
+    if (!scene.itemIds?.length) return [];
+    return scene.itemIds
+      .map((id) => getItemById(id))
+      .filter((item): item is ContentItem => Boolean(item));
   }, [scene.itemIds]);
 
-  // Reset and reveal beats when scene becomes active
+  /**
+   * Progressive beat reveal.
+   *
+   * The timers are the external system, so scheduling them is a legitimate
+   * effect. The reset to zero happens in cleanup rather than in the body: the
+   * old code called `setVisibleBeats(0)` synchronously on every activation,
+   * which queued a render that the first timer then immediately superseded.
+   * Resetting on the way out leaves the counter already at zero by the time a
+   * scene comes back into view.
+   */
   useEffect(() => {
-    if (isActive) {
+    if (!isActive) return;
+
+    const timers = [
+      setTimeout(() => setVisibleBeats(1), 300),
+      setTimeout(() => setVisibleBeats(2), 800),
+      setTimeout(() => setVisibleBeats(3), 1300),
+    ];
+
+    return () => {
+      timers.forEach(clearTimeout);
       setVisibleBeats(0);
-      // Auto-reveal first beat immediately, then progressively
-      const timer1 = setTimeout(() => setVisibleBeats(1), 300); // Reduced from 600ms
-      const timer2 = setTimeout(() => setVisibleBeats(2), 800); // Reduced from 1200ms
-      const timer3 = setTimeout(() => setVisibleBeats(3), 1300); // Reduced from 1800ms
-      return () => {
-        clearTimeout(timer1);
-        clearTimeout(timer2);
-        clearTimeout(timer3);
-      };
-    } else {
-      setVisibleBeats(0);
-    }
+    };
   }, [isActive]);
 
   const handleNextBeat = () => {

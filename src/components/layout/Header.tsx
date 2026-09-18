@@ -2,7 +2,7 @@ import { useState, useEffect, useRef } from "react";
 import { useLocation } from "react-router-dom";
 import { Menu, X } from "lucide-react";
 import { motion } from "framer-motion";
-import { SITE_TITLE } from "../../content/meta";
+import { SITE_NAME, SITE_TITLE } from "../../content/meta";
 import { clsx } from "clsx";
 import OverlayMenu from "../nav/OverlayMenu";
 import SmileLogo from "../ui/SmileLogo";
@@ -12,6 +12,7 @@ import HeaderBackdrop from "./HeaderBackdrop";
 
 const ROUTE_LABELS: Record<string, string> = {
   "/": "Story",
+  "/dashboard": "Profile",
   "/story": "Story",
   "/honors": "Honors",
   "/ventures": "Ventures",
@@ -27,6 +28,7 @@ export default function Header() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
   const menuButtonRef = useRef<HTMLButtonElement>(null);
+  const headerRef = useRef<HTMLDivElement>(null);
   const hoverTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const [buttonPosition, setButtonPosition] = useState({ top: 0, right: 0 });
   const { play } = useSound();
@@ -76,6 +78,28 @@ export default function Header() {
       };
     }
   }, []); // Keep empty deps - only run once
+
+  // Publish the header's real height as --header-h so the scroll container can
+  // pad by exactly that much. It used to be hardcoded at 57px while the header
+  // actually measures 67px, which slid the top 10px of every page underneath.
+  // Measuring instead of guessing also survives the section chip appearing,
+  // the font loading, and any future control landing in the row.
+  useEffect(() => {
+    const el = headerRef.current;
+    if (!el) return;
+
+    const publish = () => {
+      document.documentElement.style.setProperty(
+        "--header-h",
+        `${Math.round(el.getBoundingClientRect().height)}px`,
+      );
+    };
+
+    publish();
+    const observer = new ResizeObserver(publish);
+    observer.observe(el);
+    return () => observer.disconnect();
+  }, []);
 
   const menuId = "navigation-menu";
 
@@ -144,6 +168,7 @@ export default function Header() {
       <HeaderBackdrop />
       
       <motion.div
+        ref={headerRef}
         className="fixed top-0 left-0 right-0 z-30 flex items-center justify-between px-6 py-4 border-b border-white/10"
         data-header
         initial={false}
@@ -156,14 +181,18 @@ export default function Header() {
         }}
         transition={{ duration: 0.2, ease: "easeOut" }}
       >
-        <div className="flex items-center gap-3">
-          <SmileLogo className="w-6 h-6 text-[rgb(var(--fg-0))]" />
-          <h1 className="text-sm font-medium tracking-tight text-[rgb(var(--fg-0))]">
-            {SITE_TITLE}
+        {/* min-w-0 lets this column shrink instead of forcing the row wider than
+            the viewport, so the title truncates rather than wrapping the header
+            onto a second line. */}
+        <div className="flex min-w-0 items-center gap-3">
+          <SmileLogo className="w-6 h-6 shrink-0 text-[rgb(var(--fg-0))]" />
+          <h1 className="truncate text-sm font-medium tracking-tight text-[rgb(var(--fg-0))]">
+            <span className="sm:hidden">{SITE_NAME}</span>
+            <span className="hidden sm:inline">{SITE_TITLE}</span>
           </h1>
         </div>
-        
-        <div className="flex items-center gap-4">
+
+        <div className="flex shrink-0 items-center gap-4">
           {sectionLabel && location.pathname !== "/" && (
             <span
               className={clsx(

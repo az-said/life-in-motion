@@ -73,7 +73,7 @@ export default function ContactPage() {
 
           {/* GitHub */}
           <motion.a
-            href="https://github.com/saidaz24-meet/"
+            href="https://github.com/az-said/"
             target="_blank"
             rel="noopener noreferrer"
             initial={{ opacity: 0, y: 20 }}

@@ -7,6 +7,7 @@
 
 import type { ContentItem } from "./types";
 import { ORGS, ORG_IDS } from "./orgs";
+import { devLog } from "../utils/devLog";
 
 /**
  * Validate that all orgIds in a content item exist in the ORGS registry
@@ -65,7 +66,7 @@ export function logOrgValidationErrors(items: ContentItem[]): void {
       console.warn("[Org Validation] Found orgId validation errors:");
       errors.forEach((error) => console.warn(`  - ${error}`));
     } else {
-      console.log("[Org Validation] All orgIds are valid ✓");
+      devLog("[Org Validation] All orgIds are valid ✓");
     }
   }
 }

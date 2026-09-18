@@ -36,6 +36,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { useReducedMotion } from "../../hooks/useReducedMotion";
 import { clsx } from "clsx";
 import TypewriterSequence from "./TypewriterSequence";
+import { devLog } from "../../utils/devLog";
 
 interface IntroGateOverlayProps {
   onComplete: () => void;
@@ -48,10 +49,10 @@ export default function IntroGateOverlay({ onComplete, onSkip, onMountChange }: 
   const [shouldShow, setShouldShow] = useState(true);
 
   useEffect(() => {
-    console.log("[IntroGateOverlay] MOUNTED");
+    devLog("[IntroGateOverlay] MOUNTED");
     onMountChange?.(true);
     return () => {
-      console.log("[IntroGateOverlay] UNMOUNTED");
+      devLog("[IntroGateOverlay] UNMOUNTED");
       onMountChange?.(false);
     };
   }, [onMountChange]);
