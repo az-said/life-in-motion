@@ -81,36 +81,74 @@ body {
 }
 
 /*
- * Route enter fade.
+ * There is deliberately no route-change animation.
  *
- * Deliberately fail-safe: the element's resting state is fully opaque and the
- * keyframe only fades *in* from transparent. If the animation never runs — a
- * backgrounded tab pauses rAF, reduced motion, a paused compositor — the page
- * is simply visible.
+ * The wrapper AppLayout keys on `location.pathname` has exactly two properties
+ * worth animating, and both are unusable on that element:
  *
- * This replaces a Framer Motion wrapper carrying `initial={{ opacity: 0, y: 8 }}`,
- * which failed in two ways at once:
+ *   1. opacity — strands the whole route invisible. A backgrounded tab freezes
+ *      CSS animations mid-flight, and a frozen animation still applies its `0%`
+ *      keyframe: `playState: "running"`, `currentTime: 0`, forever. Measured on
+ *      /story, which was fully rendered underneath — every scene present, every
+ *      child at opacity 1 — behind a wrapper stuck at 0. That is the "I go to
+ *      story and it doesn't show" bug, and a Framer Motion `initial` was only a
+ *      worse version of the same thing.
+ *   2. transform — even `translateY(0)` makes the element the containing block
+ *      for every `position: fixed` descendant, so `fixed` stops meaning
+ *      "relative to the viewport". Story's skip button landed 75px low and the
+ *      scroll affordance hung below the bottom edge.
  *
- *   1. Page visibility depended on a JS animation completing. Loaded in a
- *      background tab, the wrapper stayed at `opacity: 0` indefinitely — the
- *      route was mounted, correct, and invisible.
- *   2. Any transform, including `translateY(0)`, makes the element the
- *      containing block for every `position: fixed` descendant. So `fixed`
- *      silently stopped meaning "relative to the viewport" on every page:
- *      Story's skip button landed 75px low and the scroll affordance hung 8px
- *      below the bottom edge.
+ * A blurred transition layer was the third option and it was the original
+ * source of the lag: a full-viewport rasterize-and-re-blur on every navigation.
  *
- * No transform here, so `fixed` means fixed again.
+ * So routes swap instantly. Nothing to stall, nothing to hijack, nothing to
+ * repaint.
  */
-@keyframes route-enter {
+
+/*
+ * Dashboard section reveal.
+ *
+ * The recruiter front door is the one page that must never be blank, so this
+ * animates position only — never opacity. Every text-hiding reveal has a state
+ * where the text is hidden, and that state is reachable: a backgrounded tab
+ * freezes CSS animations mid-flight, and a frozen animation still applies its
+ * `0%` keyframe. Measured it directly — `playState: "running"` with
+ * `currentTime: 0` that never advances. So `from { opacity: 0 }` is not
+ * fail-safe either; it is only *recoverable*, because unlike a Framer Motion
+ * `initial` (which writes an inline `opacity: 0` via rAF and can strand there)
+ * it resumes and completes the moment the tab is looked at.
+ *
+ * Recoverable is not good enough here. Animating translateY alone means the
+ * worst case is a section sitting 12px low with every word legible.
+ *
+ * The stagger rides on duration rather than `animation-delay`, because a delay
+ * needs `animation-fill-mode: backwards` to hold the offset while it waits,
+ * and a lingering fill is the thing that turns a stall into a defect. Same
+ * cascade — all start together, lower sections take longer to settle.
+ *
+ * Nothing inside these sections is `position: fixed`, so the transform cannot
+ * capture the header or the scroll affordance as .route-enter's note warns.
+ */
+@keyframes reveal {
   from {
-    opacity: 0;
+    transform: translateY(12px);
   }
 }
 
-.route-enter {
-  animation: route-enter 280ms cubic-bezier(0.4, 0, 0.2, 1);
+.reveal {
+  animation: reveal 460ms cubic-bezier(0.4, 0, 0.2, 1);
 }
+
+.reveal-1 { animation-duration: 550ms; }
+.reveal-2 { animation-duration: 640ms; }
+.reveal-3 { animation-duration: 730ms; }
+.reveal-4 { animation-duration: 820ms; }
+.reveal-5 { animation-duration: 910ms; }
+.reveal-6 { animation-duration: 1000ms; }
+.reveal-7 { animation-duration: 1090ms; }
+.reveal-8 { animation-duration: 1180ms; }
+.reveal-9 { animation-duration: 1270ms; }
+.reveal-10 { animation-duration: 1360ms; }
 
 /* Respect reduced motion */
 @media (prefers-reduced-motion: reduce) {

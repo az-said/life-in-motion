@@ -7,7 +7,7 @@ import { clsx } from "clsx";
 import OverlayMenu from "../nav/OverlayMenu";
 import SmileLogo from "../ui/SmileLogo";
 import SoundToggle from "../ui/SoundToggle";
-import { useSound } from "../../app/providers/SoundProvider";
+import { useSound } from "../../app/providers/soundContext";
 import HeaderBackdrop from "./HeaderBackdrop";
 
 const ROUTE_LABELS: Record<string, string> = {
@@ -169,7 +169,11 @@ export default function Header() {
       
       <motion.div
         ref={headerRef}
-        className="fixed top-0 left-0 right-0 z-30 flex items-center justify-between px-6 py-4 border-b border-white/10"
+        // Tighter vertical padding on a phone. The controls inside grew to 44px
+        // tap targets, which would otherwise push the bar to ~77px and eat the
+        // top of every page. Height is measured and published as --header-h
+        // below, so the page offset follows automatically either way.
+        className="fixed top-0 left-0 right-0 z-30 flex items-center justify-between px-4 py-2 sm:px-6 sm:py-4 border-b border-white/10"
         data-header
         initial={false}
         animate={{
@@ -222,7 +226,11 @@ export default function Header() {
               }}
               aria-controls={menuId}
               className={clsx(
-                "p-2 rounded-md transition-all duration-200 ease-out",
+                // 44px box on a phone, original compact padding from `sm` up.
+                // This was a 34px target in the top corner of the screen — the
+                // hardest place on a phone to hit accurately.
+                "inline-flex h-11 w-11 items-center justify-center sm:h-auto sm:w-auto sm:p-2",
+                "rounded-md transition-all duration-200 ease-out",
                 "hover:bg-white/5 active:bg-white/10",
                 "border border-white/10 hover:border-white/20",
                 "hover:-translate-y-0.5 active:translate-y-0",

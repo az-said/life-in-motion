@@ -81,14 +81,13 @@ export default function AppLayout() {
                  layer, forcing a rasterize-and-re-blur of the entire page on
                  every route change. That was the lag.
 
-              4. A plain div with a CSS animation, not a motion.div. See the
-                 `.route-enter` comment in index.css — a JS-driven `opacity: 0`
-                 initial state can strand a whole route invisible, and any
-                 transform on this element would hijack `position: fixed` for
-                 every descendant. */}
+              4. A plain div with no entry animation at all. See the note in
+                 index.css — on this particular element opacity can strand a
+                 whole route invisible and transform hijacks `position: fixed`
+                 for every descendant, which leaves nothing safe to animate. */}
           <div
             key={location.pathname}
-            className={`route-enter ${isStoryRoute ? "h-full pointer-events-auto" : "flex flex-col min-h-full"} w-full`}
+            className={`${isStoryRoute ? "h-full pointer-events-auto" : "flex flex-col min-h-full"} w-full`}
           >
             {/* One Suspense boundary for every lazily-chunked route. It sits
                 inside the page-transition wrapper so the fallback fades in

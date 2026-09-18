@@ -1,9 +1,10 @@
 import { useEffect, useRef, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { Navigate, useNavigate } from "react-router-dom";
 import { AnimatePresence, motion } from "framer-motion";
 import RidahSequence from "../../components/intro/RidahSequence";
 import { useIntroGate } from "../hooks/useIntroGate";
 import { useReducedMotion } from "../../hooks/useReducedMotion";
+import { useIsDesktop } from "../../hooks/useIsDesktop";
 
 /**
  * Desktop front door.
@@ -21,6 +22,7 @@ import { useReducedMotion } from "../../hooks/useReducedMotion";
  */
 export default function IntroGatePage() {
   const navigate = useNavigate();
+  const isDesktop = useIsDesktop();
   const { shouldShow, complete } = useIntroGate();
   const [isTransitioning, setIsTransitioning] = useState(false);
   const handoffRef = useRef(false);
@@ -33,6 +35,21 @@ export default function IntroGatePage() {
     },
     [],
   );
+
+  /**
+   * No intro on a phone. Not the breath, not a frame of white.
+   *
+   * EntryPage already branches on viewport before this component is ever
+   * imported, so on a phone this guard should be unreachable. It exists anyway
+   * because "the gate never runs on a phone" is a promise about *this* file, and
+   * a promise enforced only by the single caller is one refactor away from
+   * breaking silently. Checked before any timer, any motion value, any paint.
+   *
+   * `replace` so Back leaves the site rather than bouncing through a redirect.
+   */
+  if (!isDesktop) {
+    return <Navigate to="/dashboard" replace />;
+  }
 
   const handleComplete = () => {
     if (handoffRef.current) return;

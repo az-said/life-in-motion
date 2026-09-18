@@ -24,7 +24,11 @@ export default function PageFooter() {
             target="_blank"
             rel="noopener noreferrer"
             className={clsx(
-              "p-2 rounded-md transition-all duration-200 ease-out",
+              // 44px tap target on a phone, original compact padding from `sm`
+              // up. These were 34px, and they sit at the very bottom of the
+              // page where a thumb is least accurate.
+              "inline-flex h-11 w-11 items-center justify-center sm:h-auto sm:w-auto sm:p-2",
+              "rounded-md transition-all duration-200 ease-out",
               "hover:bg-white/5 active:bg-white/10",
               "border border-white/10 hover:border-white/20",
               "text-[rgb(var(--fg-1))] hover:text-[rgb(var(--fg-0))]",
@@ -42,7 +46,11 @@ export default function PageFooter() {
             target="_blank"
             rel="noopener noreferrer"
             className={clsx(
-              "p-2 rounded-md transition-all duration-200 ease-out",
+              // 44px tap target on a phone, original compact padding from `sm`
+              // up. These were 34px, and they sit at the very bottom of the
+              // page where a thumb is least accurate.
+              "inline-flex h-11 w-11 items-center justify-center sm:h-auto sm:w-auto sm:p-2",
+              "rounded-md transition-all duration-200 ease-out",
               "hover:bg-white/5 active:bg-white/10",
               "border border-white/10 hover:border-white/20",
               "text-[rgb(var(--fg-1))] hover:text-[rgb(var(--fg-0))]",
@@ -59,7 +67,11 @@ export default function PageFooter() {
           <a
             href="mailto:az.said2007@gmail.com"
             className={clsx(
-              "p-2 rounded-md transition-all duration-200 ease-out",
+              // 44px tap target on a phone, original compact padding from `sm`
+              // up. These were 34px, and they sit at the very bottom of the
+              // page where a thumb is least accurate.
+              "inline-flex h-11 w-11 items-center justify-center sm:h-auto sm:w-auto sm:p-2",
+              "rounded-md transition-all duration-200 ease-out",
               "hover:bg-white/5 active:bg-white/10",
               "border border-white/10 hover:border-white/20",
               "text-[rgb(var(--fg-1))] hover:text-[rgb(var(--fg-0))]",

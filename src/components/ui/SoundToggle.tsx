@@ -1,5 +1,5 @@
 import { Volume2, VolumeX } from "lucide-react";
-import { useSound } from "../../app/providers/SoundProvider";
+import { useSound } from "../../app/providers/soundContext";
 import { clsx } from "clsx";
 
 interface SoundToggleProps {
@@ -11,7 +11,13 @@ export default function SoundToggle({ className, size = "md" }: SoundToggleProps
   const { isEnabled, toggleSound, play } = useSound();
 
   const iconSize = size === "sm" ? "w-3 h-3" : "w-4 h-4";
-  const padding = size === "sm" ? "p-1.5" : "p-2";
+  // A 26px control in the corner of a phone screen is not reliably tappable.
+  // Below `sm` both sizes get a 44px box with the icon centred; from `sm` up —
+  // where the pointer is a cursor — the original compact padding returns.
+  const padding = clsx(
+    "inline-flex h-11 w-11 items-center justify-center sm:h-auto sm:w-auto",
+    size === "sm" ? "sm:p-1.5" : "sm:p-2",
+  );
 
   const handleClick = () => {
     play("click");
