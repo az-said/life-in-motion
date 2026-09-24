@@ -13,7 +13,12 @@
       "statusCode": 307
     },
     {
-      "source": "/:path([cC][vV]-?[fF][uU][lL][lL])",
+      "source": "/cv-full",
+      "destination": "/Said-Azaizah-CV-Full.pdf",
+      "statusCode": 307
+    },
+    {
+      "source": "/cvfull",
       "destination": "/Said-Azaizah-CV-Full.pdf",
       "statusCode": 307
     }
