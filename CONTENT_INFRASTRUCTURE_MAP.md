@@ -70,7 +70,7 @@ This document provides a comprehensive guide to where all content lives, how it'
 
 | Route | Page Component | Key Components Used |
 |-------|---------------|---------------------|
-| `/` | `src/app/views/IntroGatePage.tsx` | `IntroGateOverlay`, `RecapGateOverlay`, `TypewriterSequence` |
+| `/` | `src/app/views/IntroGatePage.tsx` | `RidahSequence` |
 | `/story` | `src/app/views/StoryPage.tsx` | `StoryShell`, `CinematicScene`, `MobileScrollAffordance` |
 | `/honors` | `src/app/views/HonorsPage.tsx` | `CaseFileModal`, `LazyImage`, `LazyVideo`, `Badge`, `OrgBadges` |
 | `/ventures` | `src/app/views/VenturesPage.tsx` | `CaseFileModal`, `HeroMedia`, `ProofLinksStrip`, `Badge`, `OrgBadges` |
