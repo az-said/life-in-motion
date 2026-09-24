@@ -62,6 +62,10 @@ habits rather than nationality.
 
 ## Positions and selection
 
+- Venture Partner, Contrary (Sep 2026–present) — selected as 1 of ~25
+  undergraduate Venture Partners across 40+ North American campuses; sources
+  early-stage founders across MIT and the wider Cambridge/Boston ecosystem and
+  provides diligence support to the HQ investment team
 - Orbit Ambassador & Student Board of Advisors, Martin Trust Center for MIT
   Entrepreneurship, Class of 2030 (Aug 2026–present)
 - DESY Delegate & Research Intern, DESY / Weizmann Institute of Science
@@ -110,4 +114,4 @@ habits rather than nationality.
 
 Every number here is taken from the CV at `/cv` and is intended to be verifiable
 through the linked repositories and sites. If a figure disagrees with the PDF at
-`/cv`, the PDF is authoritative. Last updated 2026-09-18.
+`/cv`, the PDF is authoritative. Last updated 2026-09-23.
