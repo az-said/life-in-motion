@@ -1,13 +1,7 @@
 import { Link } from "react-router-dom";
-import {
-  ArrowUpRight,
-  Download,
-  Github,
-  Linkedin,
-  Mail,
-  Phone,
-} from "lucide-react";
+import { ArrowUpRight } from "lucide-react";
 import Container from "../../components/layout/Container";
+import DashboardHero from "../../components/dashboard/DashboardHero";
 import SEOHead from "../../components/ui/SEOHead";
 import {
   AFFILIATIONS,
@@ -27,35 +21,32 @@ import {
  * scans the QR on a phone at the booth and then opens the site on a laptop that
  * evening must see the same page, or the card stops being trustworthy.
  *
- * Budget: everything above the fold is text. No images, no video, no fetch.
+ * Budget above the fold: text plus one 105 KB portrait, loaded eagerly because
+ * on a phone it is the LCP element and on a laptop it is the frame the intro
+ * hands off (see DashboardHero). Still no video, no fetch, no layout that waits
+ * on JavaScript.
  */
 
 /**
- * Section reveal class for the nth block down the page.
+ * Motion on this page comes in two kinds, split by where a block sits.
  *
- * This used to be a Framer Motion `initial={{ opacity: 0, y: 12 }}` per
- * section, which meant every word on the recruiter front door was invisible
- * until a JS animation completed. Open the site in a background tab — rAF is
- * paused, the animation never advances, and the page renders blank. Same
- * failure that used to blank /story.
+ * Above the fold, `.reveal` (DashboardHero) fires once on mount. Below it,
+ * `.scroll-rise` is tied to scroll position, because a mount animation on a
+ * section four seconds away has already finished by the time anyone looks at
+ * it — the page goes still exactly when the reading starts.
  *
- * The CSS version (see `.reveal` in index.css) rests opaque and only animates
- * in, so the worst case is "no animation", never "no page".
- *
- * Indices past the defined range fall back to the base duration rather than
- * silently dropping the class.
+ * Neither touches opacity. This page used to carry a Framer Motion
+ * `initial={{ opacity: 0, y: 12 }}` per section, which meant every word on the
+ * recruiter front door was invisible until a JS animation completed. Open it in
+ * a background tab: rAF is paused, the animation never advances, the page
+ * renders blank. That is the failure that used to blank /story too. Both CSS
+ * animations here move position only, so the worst case is a block sitting a
+ * little low — never a block nobody can read.
  */
-const REVEAL_STEPS = 10;
-
-function reveal(index: number) {
-  const step = Math.min(Math.max(index, 0), REVEAL_STEPS);
-  return step === 0 ? "reveal" : `reveal reveal-${step}`;
-}
-
-function ProjectCard({ project, index }: { project: Project; index: number }) {
+function ProjectCard({ project }: { project: Project }) {
   return (
     <article
-      className={`${reveal(index)} group relative flex flex-col rounded-xl border border-white/10 bg-white/[0.03] p-5 transition-colors duration-200 hover:border-white/20 hover:bg-white/[0.05] sm:p-6`}
+      className="scroll-rise group relative flex flex-col rounded-xl border border-white/10 bg-white/[0.03] p-5 transition-colors duration-200 hover:border-white/20 hover:bg-white/[0.05] sm:p-6"
     >
       <header className="mb-3">
         <div className="flex flex-wrap items-baseline gap-x-3 gap-y-1">
@@ -133,96 +124,11 @@ export default function DashboardPage() {
       />
 
       <Container size="6xl" className="py-10 sm:py-14 lg:py-20">
-        {/* ---------- Hero ---------- */}
-        <header className={`${reveal(0)} max-w-3xl`}>
-          <h1 className="text-[clamp(2rem,7vw,3.5rem)] font-semibold leading-[1.05] tracking-[-0.03em] text-[rgb(var(--fg-0))]">
-            {PROFILE.name}
-          </h1>
-
-          <div
-            aria-hidden="true"
-            className="mt-5 h-[2px] w-12 bg-[rgb(var(--accent))]"
-          />
-
-          <p className="mt-5 text-[clamp(1.05rem,3.4vw,1.6rem)] font-medium leading-snug tracking-[-0.01em] text-[rgb(var(--fg-0))]">
-            {PROFILE.pitch}
-          </p>
-
-          <p className="mt-3 text-sm leading-relaxed text-[rgb(var(--fg-1))] sm:text-base">
-            {PROFILE.classYear} · {PROFILE.courseCode} — {PROFILE.course} · {PROFILE.location}
-          </p>
-        </header>
-
-        {/* ---------- Actions ----------
-
-            On a phone this is a priority stack, not a wrapping row.
-
-            Measured at 386px, the old `flex flex-wrap` produced two ragged
-            lines — [Download CV][az_said@mit.edu] then [phone][in][gh] — so the
-            one action that matters sat beside an email address and did not read
-            as primary. Every control was also 38–42px tall, under the 44px
-            minimum a thumb actually needs.
-
-            Now: stacked and full-width below `sm`, each row a real tap target,
-            ordered by what someone at a booth reaches for first. At `sm` and up
-            `sm:contents` dissolves the grouping wrapper and the children rejoin
-            the original inline row, so the laptop layout is unchanged. */}
-        <div
-          className={`${reveal(1)} mt-7 flex flex-col gap-2.5 sm:flex-row sm:flex-wrap sm:items-center sm:gap-3`}
-        >
-          <a
-            href={PROFILE.cvPath}
-            className="inline-flex min-h-12 w-full items-center justify-center gap-2 rounded-lg bg-[rgb(var(--fg-0))] px-4 text-sm font-semibold text-[rgb(var(--bg-0))] transition-transform duration-150 hover:-translate-y-0.5 active:translate-y-0 focus:outline-none focus-visible:ring-2 focus-visible:ring-white/50 sm:min-h-0 sm:w-auto sm:justify-start sm:py-2.5"
-          >
-            <Download className="h-4 w-4" aria-hidden="true" />
-            Download CV
-          </a>
-
-          {/* The full address stays visible on a phone — it is the most useful
-              string on the page — so it gets its own row instead of being
-              crushed into half a line. */}
-          <a
-            href={`mailto:${PROFILE.email}`}
-            className="inline-flex min-h-11 w-full items-center justify-center gap-2 rounded-lg border border-white/15 px-4 text-sm font-medium text-[rgb(var(--fg-0))] transition-colors hover:border-white/30 hover:bg-white/5 focus:outline-none focus-visible:ring-2 focus-visible:ring-white/30 sm:min-h-0 sm:w-auto sm:justify-start sm:py-2.5"
-          >
-            <Mail className="h-4 w-4" aria-hidden="true" />
-            {PROFILE.email}
-          </a>
-
-          <div className="flex gap-2.5 sm:contents">
-            <a
-              href={`tel:${PROFILE.phoneHref}`}
-              className="inline-flex min-h-11 flex-1 items-center justify-center gap-2 rounded-lg border border-white/15 px-4 text-sm font-medium text-[rgb(var(--fg-0))] transition-colors hover:border-white/30 hover:bg-white/5 focus:outline-none focus-visible:ring-2 focus-visible:ring-white/30 sm:min-h-0 sm:flex-none sm:py-2.5"
-            >
-              <Phone className="h-4 w-4" aria-hidden="true" />
-              <span>{PROFILE.phone}</span>
-            </a>
-
-            <a
-              href={PROFILE.linkedin}
-              target="_blank"
-              rel="noopener noreferrer"
-              aria-label="LinkedIn"
-              className="inline-flex h-11 w-11 flex-none items-center justify-center rounded-lg border border-white/15 text-[rgb(var(--fg-0))] transition-colors hover:border-white/30 hover:bg-white/5 focus:outline-none focus-visible:ring-2 focus-visible:ring-white/30 sm:h-auto sm:w-auto sm:p-2.5"
-            >
-              <Linkedin className="h-4 w-4" aria-hidden="true" />
-            </a>
-
-            <a
-              href={PROFILE.github}
-              target="_blank"
-              rel="noopener noreferrer"
-              aria-label="GitHub"
-              className="inline-flex h-11 w-11 flex-none items-center justify-center rounded-lg border border-white/15 text-[rgb(var(--fg-0))] transition-colors hover:border-white/30 hover:bg-white/5 focus:outline-none focus-visible:ring-2 focus-visible:ring-white/30 sm:h-auto sm:w-auto sm:p-2.5"
-            >
-              <Github className="h-4 w-4" aria-hidden="true" />
-            </a>
-          </div>
-        </div>
+        <DashboardHero />
 
         {/* ---------- Stats ---------- */}
         <dl
-          className={`${reveal(2)} mt-10 grid grid-cols-2 gap-x-4 gap-y-6 border-y border-white/10 py-6 sm:grid-cols-4 sm:gap-x-6`}
+          className="scroll-rise mt-12 grid grid-cols-2 gap-x-4 gap-y-6 border-y border-white/10 py-6 sm:grid-cols-4 sm:gap-x-6"
         >
           {STATS.map((stat) => (
             <div key={stat.label}>
@@ -243,21 +149,21 @@ export default function DashboardPage() {
         <section className="mt-12" aria-labelledby="work-heading">
           <h2
             id="work-heading"
-            className={`${reveal(3)} mb-5 text-xs font-semibold uppercase tracking-[0.18em] text-[rgb(var(--fg-1))]/60`}
+            className="scroll-rise mb-5 text-xs font-semibold uppercase tracking-[0.18em] text-[rgb(var(--fg-1))]/60"
           >
             Selected work
           </h2>
 
           <div className="grid gap-4 sm:gap-5 lg:grid-cols-2">
-            {PROJECTS.map((project, i) => (
-              <ProjectCard key={project.id} project={project} index={i + 4} />
+            {PROJECTS.map((project) => (
+              <ProjectCard key={project.id} project={project} />
             ))}
           </div>
         </section>
 
         {/* ---------- Affiliations ---------- */}
         <section
-          className={`${reveal(9)} mt-12`}
+          className="scroll-rise mt-12"
           aria-labelledby="affiliations-heading"
         >
           <h2
@@ -280,7 +186,7 @@ export default function DashboardPage() {
 
         {/* ---------- Deeper ---------- */}
         <section
-          className={`${reveal(10)} mt-12`}
+          className="scroll-rise mt-12"
           aria-labelledby="deeper-heading"
         >
           <h2

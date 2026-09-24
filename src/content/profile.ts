@@ -15,6 +15,25 @@
  */
 export const CV_FILE = "/Said-Azaizah-CV.pdf";
 
+/**
+ * Two portraits, because the two arrival paths need different things.
+ *
+ * STUDIO is the half-frame the desktop gate already puts against the right edge
+ * of the white breathe screen. The dashboard hero re-renders that same file, at
+ * the same width, against the same edge — so crossing from the intro to the
+ * page leaves the face exactly where it was and changes only what is behind it.
+ * That is the whole bridge: nothing travels, so nothing can land wrong.
+ *
+ * CANDID is a square crop for phones, which never see the gate and so have
+ * nothing to bridge from. The studio frame is literally half a face, cropped
+ * down the midline to sit against a screen edge; in a circle it reads as a
+ * mistake. Warm and whole beats moody and severed at a career-fair booth.
+ *
+ * If a full-frame version of the studio shoot turns up, it replaces both.
+ */
+export const STUDIO_PORTRAIT = "/images/portrait-half.jpg";
+export const CANDID_PORTRAIT = "/images/profile/hero-portrait.jpg";
+
 export const PROFILE = {
   name: "Said Azaizah",
   /** Printed on the business card, spoken at every booth. Keep it five words. */
@@ -148,6 +167,7 @@ export const PROJECTS: ReadonlyArray<Project> = [
  * hard fact a recruiter screens on, and they are on the CV header.
  */
 export const AFFILIATIONS: ReadonlyArray<string> = [
+  "Venture Partner, Contrary — 1 of ~25 across 40+ North American campuses",
   "Martin Trust Center — Orbit Ambassador & Student Board of Advisors",
   "DESY Delegate — 1 of 3 selected in Israel",
   "1st Place, HUJI AI Hackathon",
@@ -155,6 +175,41 @@ export const AFFILIATIONS: ReadonlyArray<string> = [
   "BetterMind Labs — Advanced Track, top 9 of ~1,100 applicants",
   "Sharpies Elite Tech Talent Cohort — selected 2025",
   "Arabic · Hebrew · English",
+];
+
+/**
+ * The credential rail under the hero — the names a stranger recognizes before
+ * they have read a single line.
+ *
+ * Set as type, not logos, and that is a decision rather than a shortcut. The
+ * logo files in /public/images/logos are not fit for this row: mit.png is a
+ * 300px stock-library export with the watermark checkerboard still baked into
+ * its background, five of the eight are opaque white rectangles that punch
+ * holes in a dark page, and the Weizmann lockup is half black plate. Six
+ * mismatched heights and three different whites read as a sponsor wall from a
+ * school fair. Six names in one weight read as a record.
+ *
+ * It also sidesteps the trademark question entirely. Naming an institution you
+ * belong to is fair use in any jurisdiction that matters; reproducing its mark
+ * is a licence question, and the MIT mark in particular has published rules.
+ *
+ * The heading is load-bearing. "Selected by" is a claim about who did the
+ * choosing, which is the only thing this row is allowed to assert — the same
+ * rule that governs AFFILIATIONS below. Every name here admitted, hired, or
+ * appointed him. The moment one of them is somewhere he merely attended, the
+ * heading has to change or the name has to go.
+ *
+ * Six is the cap. AppsFlyer, HUJI and BetterMind are just as real and live in
+ * AFFILIATIONS; a seventh name turns a rail into a list and makes every
+ * individual name worth less.
+ */
+export const CREDENTIAL_RAIL: ReadonlyArray<string> = [
+  "MIT",
+  "Contrary",
+  "Technion",
+  "DESY",
+  "Weizmann",
+  "MEET",
 ];
 
 /** Routes worth surfacing to someone who has more than forty seconds. */

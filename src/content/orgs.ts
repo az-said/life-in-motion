@@ -13,6 +13,9 @@ export const ORG_IDS = [
   "MIT",
   "APPSFLYER",
   "BML", // BetterMind Labs
+  "TECHNION",
+  "CONTRARY",
+  "TRUST_CENTER",
 ] as const;
 
 export type OrgId = (typeof ORG_IDS)[number];
@@ -20,8 +23,19 @@ export type OrgId = (typeof ORG_IDS)[number];
 export interface Org {
   id: OrgId;
   name: string;
-  logoSrc: string; // Path to logo in /public/images/logos/
+  /**
+   * Path to a logo in /public/images/logos/, or omitted.
+   *
+   * Omitted is a legitimate state, not a TODO. An affiliation is real whether
+   * or not a logo file has been licensed for it, and the wordmark fallback in
+   * OrgBadges reads as deliberate rather than broken. Prefer no logo over a
+   * hotlinked one — third-party marks come with usage terms, and a 404 in
+   * production is worse than a word.
+   */
+  logoSrc?: string;
   alt: string; // Alt text for logo
+  /** Rendered in place of a missing logo. Keep it to one or two words. */
+  wordmark?: string;
 }
 
 /**
@@ -76,6 +90,24 @@ export const ORGS: Record<OrgId, Org> = {
     name: "BetterMind Labs",
     logoSrc: "/images/logos/better_mind_labs_logo.jpeg",
     alt: "BetterMind Labs logo",
+  },
+  TECHNION: {
+    id: "TECHNION",
+    name: "Technion — Israel Institute of Technology",
+    alt: "Technion",
+    wordmark: "Technion",
+  },
+  CONTRARY: {
+    id: "CONTRARY",
+    name: "Contrary",
+    alt: "Contrary",
+    wordmark: "Contrary",
+  },
+  TRUST_CENTER: {
+    id: "TRUST_CENTER",
+    name: "Martin Trust Center for MIT Entrepreneurship",
+    alt: "Martin Trust Center for MIT Entrepreneurship",
+    wordmark: "Martin Trust Center",
   },
 };
 

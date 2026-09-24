@@ -150,6 +150,74 @@ body {
 .reveal-9 { animation-duration: 1270ms; }
 .reveal-10 { animation-duration: 1360ms; }
 
+/*
+ * Hero portrait settle — the second half of the intro→dashboard bridge.
+ *
+ * The desktop gate's last frame is the same portrait, oversized and dimmed
+ * (see IntroGatePage). The dashboard then mounts with the portrait already
+ * on screen and merely finishing its travel, so the handoff reads as one
+ * continuous move rather than a white screen cutting to a black one — which
+ * is the cut that made the old transition feel broken.
+ *
+ * Transform only, for the same reason as `.reveal`: the worst case has to be
+ * "the photo is 6% too large", never "there is no photo". The gate and this
+ * keyframe share a scale so the two halves line up; change one, change both.
+ */
+@keyframes hero-settle {
+  from {
+    transform: scale(1.06);
+  }
+}
+
+.hero-settle {
+  animation: hero-settle 1100ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+/*
+ * Scroll-linked rise, for everything below the fold.
+ *
+ * `.reveal` fires once on mount, which is the right behaviour for the hero and
+ * wasted on a section the visitor will not reach for another four seconds. This
+ * ties the motion to scroll position instead, so the page keeps moving as they
+ * read rather than going still after the first second.
+ *
+ * Pure CSS on purpose. The obvious alternative — IntersectionObserver toggling
+ * a class — is the exact shape of the bug that used to blank this site: content
+ * hidden by default, revealed by JavaScript, therefore blank whenever the
+ * JavaScript does not arrive. Here the browser drives it or nothing does.
+ *
+ * Three guards, because a scroll animation has more ways to strand content than
+ * a mount animation does:
+ *
+ *   - `@supports` — Firefox has no `animation-timeline` yet, so it never sees
+ *     the rule and renders the page flat and finished. Absence of motion is the
+ *     correct fallback; absence of content never is.
+ *   - transform only, as everywhere else. `fill: both` holds the `from` frame
+ *     before the element enters the range, so that frame has to be legible: it
+ *     is 28px low and 1.5% small, and it is readable the whole way.
+ *   - no `position: fixed` inside any element carrying this class, since a
+ *     transform would capture it as its containing block.
+ *
+ * Range ends at `entry 70%` so a section finishes settling while it is still
+ * arriving, rather than tracking the scrollbar all the way up the viewport —
+ * motion that never resolves reads as jitter, not polish.
+ */
+@keyframes scroll-rise {
+  from {
+    transform: translateY(28px) scale(0.985);
+  }
+}
+
+@supports (animation-timeline: view()) {
+  @media (prefers-reduced-motion: no-preference) {
+    .scroll-rise {
+      animation: scroll-rise linear both;
+      animation-timeline: view();
+      animation-range: entry 0% entry 70%;
+    }
+  }
+}
+
 /* Respect reduced motion */
 @media (prefers-reduced-motion: reduce) {
   *,

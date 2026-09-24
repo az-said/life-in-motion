@@ -4,7 +4,7 @@
     --fg-0: 245 245 247;    /* near-white */
     --fg-1: 200 200 210;    /* muted text */
     --line: 255 255 255;    /* hairline borders via opacity */
-    --accent: 120 220 255;  /* subtle cyan accent (we can tune) */
+    --accent: 34 211 238;   /* #22D3EE — saturated cyan */
   }
   
   /* Film grain overlay (subtle) */

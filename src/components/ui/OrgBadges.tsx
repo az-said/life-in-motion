@@ -38,12 +38,18 @@ export default function OrgBadges({ orgIds, className }: OrgBadgesProps) {
             className
           )}
         >
-          <LazyImage
-            src={org.logoSrc}
-            alt={org.alt}
-            className="h-full w-auto max-w-[120px] object-contain object-center"
-            loading="lazy"
-          />
+          {org.logoSrc ? (
+            <LazyImage
+              src={org.logoSrc}
+              alt={org.alt}
+              className="h-full w-auto max-w-[120px] object-contain object-center"
+              loading="lazy"
+            />
+          ) : (
+            <span className="text-[10px] md:text-[11px] font-medium tracking-wide text-white/80 whitespace-nowrap">
+              {org.wordmark ?? org.name}
+            </span>
+          )}
         </div>
       ))}
     </>
