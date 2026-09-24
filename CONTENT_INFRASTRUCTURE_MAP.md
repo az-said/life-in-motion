@@ -631,7 +631,6 @@ When users click the scene, they can navigate to the linked content item.
 
 **Files to check**:
 - `src/app/views/StoryPage.tsx` (line 39-48)
-- `src/components/intro/DebugHUD.tsx` (if exists)
 
 #### 404 / SPA Fallback (Vercel)
 

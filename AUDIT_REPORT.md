@@ -20,12 +20,6 @@
    - **Status**: Functional but placeholder
    - **Fix**: Replace with actual logo design
 
-3. **IntroGateOverlay Logo Strip Placeholder** (Low Severity)
-   - **File**: `src/components/intro/IntroGateOverlay.tsx:148`
-   - **Issue**: Comment mentions "Logo strip will be added here" with empty div
-   - **Status**: Non-functional but doesn't break anything
-   - **Fix**: Remove or implement logo strip
-
 ### UX/Animation Smoothness Issues
 
 1. **Scroll-to-top on Navigation** (High Severity) - **FIXED**

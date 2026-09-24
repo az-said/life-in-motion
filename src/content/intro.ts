@@ -62,7 +62,6 @@ export interface IntroGateConfig {
  */
 /**
  * Intro sequence content
- * Timing values are handled by introTimings.ts constants
  * speedMs and varianceMs in type steps are optional and will use defaults if omitted
  */
 export const INTRO_GATE: IntroGateConfig = {
@@ -75,7 +74,7 @@ export const INTRO_GATE: IntroGateConfig = {
       id: "line-1",
       type: "type",
       text: "Life is motion.",
-      // speedMs and varianceMs will use defaults from introTimings.ts
+      // speedMs and varianceMs will use defaults
       tone: "dramatic",
       lineBreakAfter: true,
     },
@@ -118,7 +117,7 @@ export const INTRO_GATE: IntroGateConfig = {
       id: "dots-1",
       type: "dots",
       cycles: 2,
-      // dotIntervalMs will use default from introTimings.ts if omitted
+      // dotIntervalMs will use default if omitted
     },
     // Pause after dots
     {
