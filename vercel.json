@@ -11,6 +11,11 @@
       "source": "/:path([rR][eE][sS][uU][mM][eE])",
       "destination": "/Said-Azaizah-CV.pdf",
       "statusCode": 307
+    },
+    {
+      "source": "/:path([cC][vV]-?[fF][uU][lL][lL])",
+      "destination": "/Said-Azaizah-CV-Full.pdf",
+      "statusCode": 307
     }
   ],
 
@@ -22,6 +27,16 @@
         {
           "key": "Content-Disposition",
           "value": "inline; filename=\"Said-Azaizah-CV.pdf\""
+        }
+      ]
+    },
+    {
+      "source": "/Said-Azaizah-CV-Full.pdf",
+      "headers": [
+        { "key": "Cache-Control", "value": "public, max-age=0, must-revalidate" },
+        {
+          "key": "Content-Disposition",
+          "value": "inline; filename=\"Said-Azaizah-CV-Full.pdf\""
         }
       ]
     },
