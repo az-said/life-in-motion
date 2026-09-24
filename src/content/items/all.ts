@@ -142,7 +142,7 @@ export const ALL_ITEMS: ContentItem[] = [
     "id": "pvl-internship",
     "type": "venture",
     "title": "Peptide Visual Lab",
-    "date": "dec 2024 - present",
+    "date": "sep 2025 - present",
     "tags": [
       "Research",
       "Craft",
@@ -294,7 +294,7 @@ export const ALL_ITEMS: ContentItem[] = [
       ]
     },
     "card": {
-      "oneLiner": "Built a form-filling assistant in 48 hrs. Won the HUJI hackathon grand prize as a highschooler.",
+      "oneLiner": "Built a form-filling assistant in 36 hrs. Won the HUJI hackathon grand prize as a highschooler.",
       "headline": "Winner: HUJI Hackathon",
       "subhead": "A solution for my grandmother's weekly struggles with bureaucracy."
     },
@@ -409,7 +409,7 @@ export const ALL_ITEMS: ContentItem[] = [
       ]
     },
     "card": {
-      "oneLiner": "Selected for BetterMind Labs advanced track (after 300+ hours of teaching)",
+      "oneLiner": "Advanced to BetterMind Labs' 12-week Advanced Track: top 9 of ~1,100 applicants.",
       "headline": "Built MSSA to support MEET teaching & curriculum development.",
       "subhead": "Advanced track coaching while shipping an assistant for instructors."
     },
@@ -428,7 +428,7 @@ export const ALL_ITEMS: ContentItem[] = [
         "Iterated with feedback and prepared the tool for real use in MEET."
       ],
       "impact": [
-        "Selected for the BetterMind Labs Advanced Track after the initial program ( Top 4% )",
+        "Advanced to the 12-week Advanced Track: top 9 of ~1,100 applicants. Named among “top performing students.”",
         "Shipped a tool aimed at reducing prep friction and improving teaching consistency."
       ],
       "evidence": [
@@ -452,7 +452,7 @@ export const ALL_ITEMS: ContentItem[] = [
     "id": "dabka",
     "type": "experience",
     "title": "Dabka (Dance)",
-    "date": "2016 - present",
+    "date": "2015 - present",
     "tags": [
       "Identity",
       "Community",
@@ -555,7 +555,7 @@ export const ALL_ITEMS: ContentItem[] = [
     "id": "meet-ta",
     "type": "experience",
     "title": "MEET TA / Teaching Assistant",
-    "date": "2024 - 2025",
+    "date": "2024 - present",
     "tags": [
       "Leadership",
       "Community",
@@ -674,7 +674,7 @@ export const ALL_ITEMS: ContentItem[] = [
     "id": "volunteering",
     "type": "experience",
     "title": "Volunteering",
-    "date": "2023 - 2024",
+    "date": "2023 - 2025",
     "tags": [
       "Community",
       "Leadership"
