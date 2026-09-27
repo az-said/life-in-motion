@@ -174,6 +174,95 @@ body {
 }
 
 /*
+ * Credential rail — the six institution marks under the hero.
+ *
+ * Drawn as a mask over `currentColor` rather than as an `<img>`. That is not
+ * stylistic: four of the six source files arrived with a background plate baked
+ * in instead of real alpha, so the standard `filter: brightness(0) invert(1)`
+ * recolour turns them into solid white rectangles. They were flattened to
+ * white-on-transparent offline, and a mask then tints that single system to
+ * whatever colour the row asks for — which a filter chain cannot do at all once
+ * the pixels are already white.
+ *
+ * Consequence worth knowing: the glyph *is* the colour, so `color` alone drives
+ * both the resting dim and the accent hover, and one inherited property keeps
+ * all six in step. Sizing comes from `--cred-aspect` and `--cred-scale`, both
+ * set per mark from the registry — see `OrgMark` for why the scales differ.
+ */
+.cred-mark {
+  display: block;
+  height: calc(var(--cred-cap) * var(--cred-scale, 1));
+  width: calc(var(--cred-cap) * var(--cred-scale, 1) * var(--cred-aspect, 1));
+  background-color: currentColor;
+  mask: var(--cred-src) center / contain no-repeat;
+  -webkit-mask: var(--cred-src) center / contain no-repeat;
+  transition: color 220ms ease, transform 220ms ease;
+}
+
+/*
+ * Hovering one mark lifts it to the accent and drops the other five back, so
+ * the gesture reads as "this one" instead of "something moved". Static opacities
+ * on a transition, never a keyframed one — the rule against animating opacity is
+ * about frozen `0%` frames, and a transition has no frame to freeze in.
+ *
+ * `.cred-mark:hover` beats the inherited dim by being a direct declaration
+ * rather than a more specific one, which is why no `!important` is needed.
+ */
+.cred-rail {
+  color: rgb(255 255 255 / 0.62);
+  transition: color 220ms ease;
+}
+
+@media (hover: hover) {
+  .cred-rail:hover {
+    color: rgb(255 255 255 / 0.3);
+  }
+
+  .cred-mark:hover {
+    color: rgb(var(--accent));
+    transform: translateY(-2px);
+  }
+}
+
+/* No hover to reward, so nothing is held back for it. */
+@media (hover: none) {
+  .cred-rail {
+    color: rgb(255 255 255 / 0.8);
+  }
+}
+
+/*
+ * Entrance. Blur instead of opacity, for the reason `.reveal` gives at length:
+ * a frozen animation applies its `0%` frame forever, and `blur(5px)` frozen is
+ * a soft mark that is still plainly a mark, where `opacity: 0` frozen is a hole
+ * where six institutions used to be. It also happens to look better than a
+ * fade — the marks resolve into focus rather than materializing.
+ *
+ * Stagger rides on duration, not `animation-delay`, so no `fill-mode` is needed
+ * to hold the start frame while waiting. Same reasoning and same cascade shape
+ * as `.reveal-1..10`; `nth-child` rather than per-item classes because the rail
+ * has exactly six slots and the order is the content's, not the layout's.
+ */
+@keyframes cred-in {
+  from {
+    transform: translateY(10px);
+    filter: blur(5px);
+  }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .cred-mark {
+    animation: cred-in 620ms cubic-bezier(0.22, 1, 0.36, 1);
+  }
+
+  .cred-rail > li:nth-child(2) .cred-mark { animation-duration: 700ms; }
+  .cred-rail > li:nth-child(3) .cred-mark { animation-duration: 780ms; }
+  .cred-rail > li:nth-child(4) .cred-mark { animation-duration: 860ms; }
+  .cred-rail > li:nth-child(5) .cred-mark { animation-duration: 940ms; }
+  .cred-rail > li:nth-child(6) .cred-mark { animation-duration: 1020ms; }
+}
+
+/*
  * Scroll-linked rise, for everything below the fold.
  *
  * `.reveal` fires once on mount, which is the right behaviour for the hero and

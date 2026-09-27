@@ -8,6 +8,8 @@
  * the PDF are read side by side by the same person.
  */
 
+import type { OrgId } from "./orgs";
+
 /**
  * The actual PDF on disk. Only two places may reference this filename: the
  * vercel.json redirect and CvRedirect. Everything user-facing links to `/cv`,
@@ -178,37 +180,39 @@ export const AFFILIATIONS: ReadonlyArray<string> = [
 ];
 
 /**
- * The credential rail under the hero — the names a stranger recognizes before
+ * The credential rail under the hero — the marks a stranger recognizes before
  * they have read a single line.
- *
- * Set as type, not logos, and that is a decision rather than a shortcut. The
- * logo files in /public/images/logos are not fit for this row: mit.png is a
- * 300px stock-library export with the watermark checkerboard still baked into
- * its background, five of the eight are opaque white rectangles that punch
- * holes in a dark page, and the Weizmann lockup is half black plate. Six
- * mismatched heights and three different whites read as a sponsor wall from a
- * school fair. Six names in one weight read as a record.
- *
- * It also sidesteps the trademark question entirely. Naming an institution you
- * belong to is fair use in any jurisdiction that matters; reproducing its mark
- * is a licence question, and the MIT mark in particular has published rules.
  *
  * The heading is load-bearing. "Selected by" is a claim about who did the
  * choosing, which is the only thing this row is allowed to assert — the same
- * rule that governs AFFILIATIONS below. Every name here admitted, hired, or
+ * rule that governs AFFILIATIONS below. Every org here admitted, hired, or
  * appointed him. The moment one of them is somewhere he merely attended, the
- * heading has to change or the name has to go.
+ * heading has to change or the org has to go.
  *
- * Six is the cap. AppsFlyer, HUJI and BetterMind are just as real and live in
- * AFFILIATIONS; a seventh name turns a rail into a list and makes every
- * individual name worth less.
+ * Six is the cap, and membership is decided by that rule alone rather than by
+ * which logo files happen to exist. AppsFlyer, HUJI and BetterMind are just as
+ * real and live in AFFILIATIONS; a seventh mark turns a rail into a list and
+ * makes every individual one worth less.
+ *
+ * This is set as logos now, which it was not before. The reason it used to be
+ * type is that the source art was unusable — opaque white plates punching holes
+ * in a dark page, a watermark checkerboard baked into MIT's background, a
+ * Weizmann lockup on half a black slab, six heights and three different whites,
+ * the whole thing reading as a sponsor wall from a school fair. What changed is
+ * that all six were flattened to one white-on-alpha system offline and are now
+ * drawn as masks at optically equalized weight (see `OrgMark`), so the row is
+ * one material rather than six imports.
+ *
+ * Every id here must have a `mark` in ORGS. The rail falls back to the wordmark
+ * if one is missing, so a bad id degrades to the old typographic row instead of
+ * to a hole.
  */
-export const CREDENTIAL_RAIL: ReadonlyArray<string> = [
+export const CREDENTIAL_RAIL: ReadonlyArray<OrgId> = [
   "MIT",
-  "Contrary",
-  "Technion",
+  "CONTRARY",
+  "TECHNION",
   "DESY",
-  "Weizmann",
+  "WEIZMANN",
   "MEET",
 ];
 

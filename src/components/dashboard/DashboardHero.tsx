@@ -1,3 +1,4 @@
+import type { CSSProperties } from "react";
 import { Download, Github, Linkedin, Mail, Phone } from "lucide-react";
 import {
   CANDID_PORTRAIT,
@@ -5,6 +6,7 @@ import {
   PROFILE,
   STUDIO_PORTRAIT,
 } from "../../content/profile";
+import { ORGS } from "../../content/orgs";
 
 /**
  * DashboardHero — the first screen a recruiter sees, and on desktop the second
@@ -166,30 +168,53 @@ export default function DashboardHero() {
             {PROFILE.location}
           </p>
 
-          {/* Credential rail. Set as type rather than logos — see the note on
-              CREDENTIAL_RAIL for why the logo files cannot carry this row. */}
+          {/* ---------- Credential rail ----------
+
+              Logos, drawn as masks over `currentColor`. The mechanics and the
+              reason it is not six `<img>` tags are in index.css under
+              `.cred-mark`; the reason these six and no others is on
+              CREDENTIAL_RAIL.
+
+              No dividers, unlike the typographic row this replaced. Marks of
+              six different widths already read as six things, and a rule
+              between each one turns a rail into a table.
+
+              `--cred-cap` is the one number that sizes the row. Each mark's own
+              `--cred-scale` multiplies it so equal weight, not equal height, is
+              what the eye gets. */}
           <div className="reveal reveal-3 mt-7 border-t border-white/10 pt-5">
             <p className="text-[10px] font-semibold uppercase tracking-[0.2em] text-[rgb(var(--fg-1))]/45">
               Selected by
             </p>
-            <ul className="mt-2.5 flex flex-wrap items-center gap-x-3 gap-y-1.5 sm:gap-x-4">
-              {CREDENTIAL_RAIL.map((name, i) => (
-                <li key={name} className="flex items-center gap-x-3 sm:gap-x-4">
-                  {/* Dividers only where the rail fits on one line. A wrapped
-                      row puts a divider at the start of the second line with
-                      nothing to its left, which reads as a typo. Below `sm`
-                      the gap carries the separation on its own. */}
-                  {i > 0 && (
-                    <span
-                      aria-hidden="true"
-                      className="hidden h-3 w-px bg-white/15 sm:block"
-                    />
-                  )}
-                  <span className="text-[13px] font-semibold tracking-[-0.01em] text-[rgb(var(--fg-0))]/85 sm:text-[15px]">
-                    {name}
-                  </span>
-                </li>
-              ))}
+            <ul className="cred-rail mt-3 flex flex-wrap items-center gap-x-5 gap-y-3 [--cred-cap:1.375rem] sm:gap-x-7 sm:[--cred-cap:1.625rem]">
+              {CREDENTIAL_RAIL.map((id) => {
+                const org = ORGS[id];
+                return (
+                  <li key={id} className="flex items-center">
+                    {org.mark ? (
+                      /* role="img" because a masked span carries no implicit
+                         semantics, and the org's name is the whole payload of
+                         this row — it has to survive with images off. */
+                      <span
+                        role="img"
+                        aria-label={org.name}
+                        className="cred-mark"
+                        style={
+                          {
+                            "--cred-src": `url(${org.mark.src})`,
+                            "--cred-aspect": org.mark.width / org.mark.height,
+                            "--cred-scale": org.mark.scale,
+                          } as CSSProperties
+                        }
+                      />
+                    ) : (
+                      <span className="text-[13px] font-semibold tracking-[-0.01em] text-[rgb(var(--fg-0))]/85 sm:text-[15px]">
+                        {org.wordmark ?? org.name}
+                      </span>
+                    )}
+                  </li>
+                );
+              })}
             </ul>
           </div>
 
