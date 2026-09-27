@@ -10,12 +10,18 @@ Every mark is derived from its original on every run, so this is idempotent —
 re-running cannot compound a crop. Output is white-on-transparent at a common
 height; the rail tints it through a CSS mask (see .cred-mark in index.css).
 
-The three recovery modes exist because only half the originals have real alpha:
+The four recovery modes exist because only half the originals have real alpha:
 
   alpha     Real transparency already. Keep the shape, force the pixels white.
   ink       Art sitting on an opaque white plate. Darkness becomes opacity, so
             antialiased edges survive instead of stair-stepping.
   knockout  A light glyph on a dark plate, where `ink` would produce a negative.
+  keyline   Real alpha, but the shape is drawn with a white outline around it.
+            `alpha` would fuse the glyphs to their own outline and hand back a
+            solid blob — TNT's three letters share one keyline and merge into a
+            single slab. This drops anything near white and takes everything
+            else at full weight, so the letters separate and the arc keeps the
+            same density as the type instead of ghosting behind it.
 
 Two marks need geometry, not just colour:
 
@@ -51,6 +57,7 @@ MARKS = [
     ("yc", "yc.png", "ink"),
     ("zfellows", "zfellows.png", "ink"),
     ("rho", "rho.png", "ink"),
+    ("tnt", "tnt.png", "keyline"),
 ]
 
 
@@ -70,6 +77,12 @@ def recover(im, mode):
         raw = 255.0 - mn
         peak = np.percentile(raw, 99)
         out = np.clip(raw * (255.0 / peak), 0, 255) * (al / 255.0) if peak > 0 else raw
+    elif mode == "keyline":
+        # A 40-wide ramp starting just off white. The source is bimodal — the
+        # min-channel sits at 19..22 across the letters and arc and at 252..255
+        # on the keyline, with almost nothing between — so the ramp only has to
+        # clear the white and everything real arrives at full opacity.
+        out = np.clip((255.0 - mn - 40.0) / 40.0, 0, 1) * 255.0 * (al / 255.0)
     elif mode == "knockout":
         # A hard ramp, not a threshold. Contrary's plate is a gradient whose
         # min-channel sits at 52/67/76 across the p50/p80/p90 band and only

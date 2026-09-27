@@ -229,12 +229,36 @@ body {
   --cred-rest: 0.45;
 }
 
+/*
+ * The anchor is a bare wrapper: the mark is already exactly its own glyph, so
+ * giving the link a box of its own would put dead clickable space between the
+ * marks and widen the gaps the rail spent so long getting right.
+ */
+.cred-link {
+  display: block;
+  border-radius: 3px;
+}
+
+/* Keyboard only. A mouse user who just clicked a logo does not need a ring
+   left behind on it, but a tab user needs to know where they are. */
+.cred-link:focus-visible {
+  outline: 2px solid rgb(var(--accent));
+  outline-offset: 4px;
+}
+
+.cred-link:focus-visible .cred-mark {
+  color: rgb(var(--accent));
+}
+
 @media (hover: hover) {
   .cred-rail:hover {
     color: rgb(255 255 255 / calc(var(--cred-rest) * 0.48));
   }
 
-  .cred-mark:hover {
+  /* Both forms, because a mark may or may not be wrapped in a link and the
+     gesture has to feel identical either way. */
+  .cred-mark:hover,
+  .cred-link:hover .cred-mark {
     color: rgb(var(--accent));
     transform: translateY(-2px);
   }

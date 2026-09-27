@@ -17,6 +17,7 @@ export const ORG_IDS = [
   "CONTRARY",
   "TRUST_CENTER",
   "YC",
+  "TNT",
   "ZFELLOWS",
   "RHO",
 ] as const;
@@ -39,6 +40,15 @@ export interface Org {
   alt: string; // Alt text for logo
   /** Rendered in place of a missing logo. Keep it to one or two words. */
   wordmark?: string;
+  /**
+   * The org's official homepage. Makes its mark in the credential rail
+   * clickable; omit it and the mark renders as plain, unclickable art.
+   *
+   * Has to be the canonical front door, not a page about him. A logo that
+   * lands a reader on a subpage, a redirect chain or a stale campaign URL is
+   * worse than a logo that does nothing, because the reader blames him for it.
+   */
+  url?: string;
   /**
    * The monochrome mark, for the hero credential rail only. Distinct from
    * `logoSrc`: that one is the org's own colours inside a plate, this one is a
@@ -99,6 +109,9 @@ export const ORGS: Record<OrgId, Org> = {
     name: "MEET (Middle East Entrepreneurs of Tomorrow)",
     logoSrc: "/images/logos/meet.png",
     alt: "MEET logo",
+    /* The org's own site, not meet.mit.edu — that one is an MIT-side volunteer
+       page that links back out to here. */
+    url: "https://www.meet.org",
     mark: { src: "/images/logos/mono-meet.png", width: 392, height: 112, scale: 0.91 },
   },
   HUJI: {
@@ -112,6 +125,7 @@ export const ORGS: Record<OrgId, Org> = {
     name: "DESY (Deutsches Elektronen-Synchrotron)",
     logoSrc: "/images/logos/DESY.png",
     alt: "DESY logo",
+    url: "https://www.desy.de/index_eng.html",
     mark: { src: "/images/logos/mono-desy.png", width: 112, height: 112, scale: 1.31 },
   },
   WEIZMANN: {
@@ -124,6 +138,7 @@ export const ORGS: Record<OrgId, Org> = {
      */
     alt: "Weizmann Institute of Science",
     wordmark: "Weizmann",
+    url: "https://www.weizmann.ac.il",
     mark: { src: "/images/logos/mono-weizmann.png", width: 140, height: 112, scale: 1.23 },
   },
   MIT: {
@@ -131,6 +146,7 @@ export const ORGS: Record<OrgId, Org> = {
     name: "Massachusetts Institute of Technology",
     logoSrc: "/images/logos/mit.png",
     alt: "MIT logo",
+    url: "https://www.mit.edu",
     mark: { src: "/images/logos/mono-mit.png", width: 217, height: 112, scale: 1 },
   },
   APPSFLYER: {
@@ -150,6 +166,7 @@ export const ORGS: Record<OrgId, Org> = {
     name: "Technion — Israel Institute of Technology",
     alt: "Technion",
     wordmark: "Technion",
+    url: "https://www.technion.ac.il/en/",
     mark: { src: "/images/logos/mono-technion.png", width: 76, height: 112, scale: 1.24 },
   },
   CONTRARY: {
@@ -157,6 +174,7 @@ export const ORGS: Record<OrgId, Org> = {
     name: "Contrary",
     alt: "Contrary",
     wordmark: "Contrary",
+    url: "https://contrary.com",
     mark: { src: "/images/logos/mono-contrary.png", width: 99, height: 112, scale: 1.36 },
   },
   TRUST_CENTER: {
@@ -164,6 +182,7 @@ export const ORGS: Record<OrgId, Org> = {
     name: "Martin Trust Center for MIT Entrepreneurship",
     alt: "Martin Trust Center for MIT Entrepreneurship",
     wordmark: "Martin Trust Center",
+    url: "https://entrepreneurship.mit.edu",
     mark: { src: "/images/logos/mono-trust-center.png", width: 109, height: 112, scale: 1.2 },
   },
   YC: {
@@ -171,13 +190,23 @@ export const ORGS: Record<OrgId, Org> = {
     name: "Y Combinator",
     alt: "Y Combinator",
     wordmark: "Y Combinator",
+    url: "https://www.ycombinator.com",
     mark: { src: "/images/logos/mono-yc.png", width: 112, height: 112, scale: 1.01 },
+  },
+  TNT: {
+    id: "TNT",
+    name: "TNT Accelerator",
+    alt: "TNT Accelerator",
+    wordmark: "TNT",
+    url: "https://www.tnt.so",
+    mark: { src: "/images/logos/mono-tnt.png", width: 176, height: 112, scale: 1.11 },
   },
   ZFELLOWS: {
     id: "ZFELLOWS",
     name: "Z Fellows",
     alt: "Z Fellows",
     wordmark: "Z Fellows",
+    url: "https://www.zfellows.com",
     mark: { src: "/images/logos/mono-zfellows.png", width: 167, height: 112, scale: 1.1 },
   },
   RHO: {
@@ -185,6 +214,7 @@ export const ORGS: Record<OrgId, Org> = {
     name: "Rho",
     alt: "Rho",
     wordmark: "Rho",
+    url: "https://www.rho.co",
     mark: { src: "/images/logos/mono-rho.png", width: 244, height: 112, scale: 1.07 },
   },
 };

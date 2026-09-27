@@ -83,28 +83,48 @@ function MarkRow({ ids, className }: { ids: ReadonlyArray<OrgId>; className: str
     <ul className={`cred-rail flex flex-wrap items-center ${className}`}>
       {ids.map((id) => {
         const org = ORGS[id];
+
+        /* role="img" because a masked span carries no implicit semantics, and
+           the org's name is the whole payload of this row — it has to survive
+           with images off. Inside a link it doubles as the link's accessible
+           name, which is why the anchor carries no label of its own. */
+        const art = org.mark ? (
+          <span
+            role="img"
+            aria-label={org.name}
+            className="cred-mark"
+            style={
+              {
+                "--cred-src": `url(${org.mark.src})`,
+                "--cred-aspect": org.mark.width / org.mark.height,
+                "--cred-scale": org.mark.scale,
+              } as CSSProperties
+            }
+          />
+        ) : (
+          <span className="text-[13px] font-semibold tracking-[-0.01em] text-[rgb(var(--fg-0))]/85 sm:text-[15px]">
+            {org.wordmark ?? org.name}
+          </span>
+        );
+
         return (
           <li key={id} className="flex items-center">
-            {org.mark ? (
-              /* role="img" because a masked span carries no implicit semantics,
-                 and the org's name is the whole payload of this row — it has to
-                 survive with images off. */
-              <span
-                role="img"
-                aria-label={org.name}
-                className="cred-mark"
-                style={
-                  {
-                    "--cred-src": `url(${org.mark.src})`,
-                    "--cred-aspect": org.mark.width / org.mark.height,
-                    "--cred-scale": org.mark.scale,
-                  } as CSSProperties
-                }
-              />
+            {org.url ? (
+              /* New tab, because this rail sits above the fold on the page that
+                 is doing the selling — sending a reader off-site mid-pitch and
+                 taking the pitch with them is a strange way to use a credential.
+                 `noreferrer` rides along with `noopener` so the destination gets
+                 no analytics trail back to a page he may be sharing privately. */
+              <a
+                href={org.url}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="cred-link"
+              >
+                {art}
+              </a>
             ) : (
-              <span className="text-[13px] font-semibold tracking-[-0.01em] text-[rgb(var(--fg-0))]/85 sm:text-[15px]">
-                {org.wordmark ?? org.name}
-              </span>
+              art
             )}
           </li>
         );

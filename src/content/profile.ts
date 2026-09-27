@@ -227,7 +227,7 @@ export const CREDENTIAL_RAIL: ReadonlyArray<OrgId> = [
  * the honesty — a viewer reads size as confidence, so these marks have to look
  * like context rather than credentials.
  */
-export const COMMUNITY_RAIL: ReadonlyArray<OrgId> = ["YC", "ZFELLOWS", "RHO"];
+export const COMMUNITY_RAIL: ReadonlyArray<OrgId> = ["YC", "TNT", "ZFELLOWS", "RHO"];
 
 /** Routes worth surfacing to someone who has more than forty seconds. */
 export const DEEPER: ReadonlyArray<{ label: string; to: string; note: string }> = [
