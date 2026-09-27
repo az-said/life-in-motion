@@ -200,22 +200,38 @@ body {
 }
 
 /*
- * Hovering one mark lifts it to the accent and drops the other five back, so
- * the gesture reads as "this one" instead of "something moved". Static opacities
- * on a transition, never a keyframed one — the rule against animating opacity is
- * about frozen `0%` frames, and a transition has no frame to freeze in.
+ * Hovering one mark lifts it to the accent and drops the rest of its row back,
+ * so the gesture reads as "this one" instead of "something moved". Static
+ * opacities on a transition, never a keyframed one — the rule against animating
+ * opacity is about frozen `0%` frames, and a transition has no frame to freeze
+ * in.
  *
  * `.cred-mark:hover` beats the inherited dim by being a direct declaration
  * rather than a more specific one, which is why no `!important` is needed.
+ *
+ * `--cred-rest` exists so `--quiet` can move the rest colour without also
+ * having to restate the hover rules. The dim-on-row-hover value is derived from
+ * it rather than fixed, or the quiet row would brighten when hovered.
  */
 .cred-rail {
-  color: rgb(255 255 255 / 0.62);
+  --cred-rest: 0.62;
+  color: rgb(255 255 255 / var(--cred-rest));
   transition: color 220ms ease;
+}
+
+/*
+ * The second row. Smaller is set by the caller's `--cred-cap`; this is the other
+ * half of the hierarchy. Membership there is "rooms he is in", not "rooms that
+ * picked him" (see COMMUNITY_RAIL), and the dimmer rest state is what keeps a
+ * reader from collapsing the two claims into one.
+ */
+.cred-rail--quiet {
+  --cred-rest: 0.45;
 }
 
 @media (hover: hover) {
   .cred-rail:hover {
-    color: rgb(255 255 255 / 0.3);
+    color: rgb(255 255 255 / calc(var(--cred-rest) * 0.48));
   }
 
   .cred-mark:hover {
@@ -227,7 +243,11 @@ body {
 /* No hover to reward, so nothing is held back for it. */
 @media (hover: none) {
   .cred-rail {
-    color: rgb(255 255 255 / 0.8);
+    --cred-rest: 0.8;
+  }
+
+  .cred-rail--quiet {
+    --cred-rest: 0.62;
   }
 }
 
@@ -240,8 +260,12 @@ body {
  *
  * Stagger rides on duration, not `animation-delay`, so no `fill-mode` is needed
  * to hold the start frame while waiting. Same reasoning and same cascade shape
- * as `.reveal-1..10`; `nth-child` rather than per-item classes because the rail
- * has exactly six slots and the order is the content's, not the layout's.
+ * as `.reveal-1..10`; `nth-child` rather than per-item classes because the order
+ * is the content's, not the layout's.
+ *
+ * Each row carries its own base so the second one finishes after the first
+ * instead of racing it — two rows resolving in parallel reads as a grid landing,
+ * which is the opposite of the left-to-right sweep this is for.
  */
 @keyframes cred-in {
   from {
@@ -251,15 +275,25 @@ body {
 }
 
 @media (prefers-reduced-motion: no-preference) {
-  .cred-mark {
-    animation: cred-in 620ms cubic-bezier(0.22, 1, 0.36, 1);
+  .cred-rail {
+    --cred-in-base: 620ms;
   }
 
-  .cred-rail > li:nth-child(2) .cred-mark { animation-duration: 700ms; }
-  .cred-rail > li:nth-child(3) .cred-mark { animation-duration: 780ms; }
-  .cred-rail > li:nth-child(4) .cred-mark { animation-duration: 860ms; }
-  .cred-rail > li:nth-child(5) .cred-mark { animation-duration: 940ms; }
-  .cred-rail > li:nth-child(6) .cred-mark { animation-duration: 1020ms; }
+  .cred-rail--quiet {
+    --cred-in-base: 1180ms;
+  }
+
+  .cred-mark {
+    animation: cred-in calc(var(--cred-in-base) + var(--cred-i, 0) * 80ms)
+      cubic-bezier(0.22, 1, 0.36, 1);
+  }
+
+  .cred-rail > li:nth-child(2) .cred-mark { --cred-i: 1; }
+  .cred-rail > li:nth-child(3) .cred-mark { --cred-i: 2; }
+  .cred-rail > li:nth-child(4) .cred-mark { --cred-i: 3; }
+  .cred-rail > li:nth-child(5) .cred-mark { --cred-i: 4; }
+  .cred-rail > li:nth-child(6) .cred-mark { --cred-i: 5; }
+  .cred-rail > li:nth-child(7) .cred-mark { --cred-i: 6; }
 }
 
 /*

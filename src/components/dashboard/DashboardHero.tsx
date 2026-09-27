@@ -2,11 +2,12 @@ import type { CSSProperties } from "react";
 import { Download, Github, Linkedin, Mail, Phone } from "lucide-react";
 import {
   CANDID_PORTRAIT,
+  COMMUNITY_RAIL,
   CREDENTIAL_RAIL,
   PROFILE,
   STUDIO_PORTRAIT,
 } from "../../content/profile";
-import { ORGS } from "../../content/orgs";
+import { ORGS, type OrgId } from "../../content/orgs";
 
 /**
  * DashboardHero — the first screen a recruiter sees, and on desktop the second
@@ -71,6 +72,46 @@ const STUDIO_PANEL_WIDTH =
   "min(clamp(320px, 30vw, 520px), calc(100dvh * 483 / 1413))";
 const STUDIO_PANEL_MASK =
   "linear-gradient(to right, transparent 0%, rgba(0,0,0,0.1) 2%, rgba(0,0,0,0.3) 5%, rgba(0,0,0,0.5) 8%, rgba(0,0,0,0.7) 12%, rgba(0,0,0,0.85) 18%, black 25%)";
+
+/**
+ * One row of the credential rail. Both rows are the same component because they
+ * are the same object at two sizes — the caller supplies the cap and the rest
+ * colour, and nothing else about them differs.
+ */
+function MarkRow({ ids, className }: { ids: ReadonlyArray<OrgId>; className: string }) {
+  return (
+    <ul className={`cred-rail flex flex-wrap items-center ${className}`}>
+      {ids.map((id) => {
+        const org = ORGS[id];
+        return (
+          <li key={id} className="flex items-center">
+            {org.mark ? (
+              /* role="img" because a masked span carries no implicit semantics,
+                 and the org's name is the whole payload of this row — it has to
+                 survive with images off. */
+              <span
+                role="img"
+                aria-label={org.name}
+                className="cred-mark"
+                style={
+                  {
+                    "--cred-src": `url(${org.mark.src})`,
+                    "--cred-aspect": org.mark.width / org.mark.height,
+                    "--cred-scale": org.mark.scale,
+                  } as CSSProperties
+                }
+              />
+            ) : (
+              <span className="text-[13px] font-semibold tracking-[-0.01em] text-[rgb(var(--fg-0))]/85 sm:text-[15px]">
+                {org.wordmark ?? org.name}
+              </span>
+            )}
+          </li>
+        );
+      })}
+    </ul>
+  );
+}
 
 export default function DashboardHero() {
   return (
@@ -171,51 +212,33 @@ export default function DashboardHero() {
           {/* ---------- Credential rail ----------
 
               Logos, drawn as masks over `currentColor`. The mechanics and the
-              reason it is not six `<img>` tags are in index.css under
-              `.cred-mark`; the reason these six and no others is on
-              CREDENTIAL_RAIL.
+              reason it is not a stack of `<img>` tags are in index.css under
+              `.cred-mark`; the reason these orgs and no others, and the reason
+              there are two rows rather than one, is on CREDENTIAL_RAIL.
 
               No dividers, unlike the typographic row this replaced. Marks of
-              six different widths already read as six things, and a rule
+              seven different widths already read as seven things, and a rule
               between each one turns a rail into a table.
 
-              `--cred-cap` is the one number that sizes the row. Each mark's own
+              `--cred-cap` is the one number that sizes a row. Each mark's own
               `--cred-scale` multiplies it so equal weight, not equal height, is
-              what the eye gets. */}
+              what the eye gets. The second row just sets a smaller cap and a
+              dimmer rest colour; nothing else about it differs. */}
           <div className="reveal reveal-3 mt-7 border-t border-white/10 pt-5">
             <p className="text-[10px] font-semibold uppercase tracking-[0.2em] text-[rgb(var(--fg-1))]/45">
               Selected by
             </p>
-            <ul className="cred-rail mt-3 flex flex-wrap items-center gap-x-5 gap-y-3 [--cred-cap:1.375rem] sm:gap-x-7 sm:[--cred-cap:1.625rem]">
-              {CREDENTIAL_RAIL.map((id) => {
-                const org = ORGS[id];
-                return (
-                  <li key={id} className="flex items-center">
-                    {org.mark ? (
-                      /* role="img" because a masked span carries no implicit
-                         semantics, and the org's name is the whole payload of
-                         this row — it has to survive with images off. */
-                      <span
-                        role="img"
-                        aria-label={org.name}
-                        className="cred-mark"
-                        style={
-                          {
-                            "--cred-src": `url(${org.mark.src})`,
-                            "--cred-aspect": org.mark.width / org.mark.height,
-                            "--cred-scale": org.mark.scale,
-                          } as CSSProperties
-                        }
-                      />
-                    ) : (
-                      <span className="text-[13px] font-semibold tracking-[-0.01em] text-[rgb(var(--fg-0))]/85 sm:text-[15px]">
-                        {org.wordmark ?? org.name}
-                      </span>
-                    )}
-                  </li>
-                );
-              })}
-            </ul>
+            <MarkRow
+              ids={CREDENTIAL_RAIL}
+              className="mt-3 gap-x-5 gap-y-3 [--cred-cap:1.375rem] sm:gap-x-7 sm:[--cred-cap:1.625rem]"
+            />
+            <p className="mt-5 text-[10px] font-semibold uppercase tracking-[0.2em] text-[rgb(var(--fg-1))]/35">
+              Communities
+            </p>
+            <MarkRow
+              ids={COMMUNITY_RAIL}
+              className="cred-rail--quiet mt-2.5 gap-x-4 gap-y-2.5 [--cred-cap:1.125rem] sm:gap-x-6 sm:[--cred-cap:1.3125rem]"
+            />
           </div>
 
           {/* ---------- Actions ----------

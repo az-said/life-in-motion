@@ -183,25 +183,28 @@ export const AFFILIATIONS: ReadonlyArray<string> = [
  * The credential rail under the hero — the marks a stranger recognizes before
  * they have read a single line.
  *
- * The heading is load-bearing. "Selected by" is a claim about who did the
- * choosing, which is the only thing this row is allowed to assert — the same
- * rule that governs AFFILIATIONS below. Every org here admitted, hired, or
- * appointed him. The moment one of them is somewhere he merely attended, the
- * heading has to change or the org has to go.
+ * Two rows, because the two claims are not the same claim. "Selected by" says
+ * someone else did the choosing: every org here admitted, hired, or appointed
+ * him, which is the same rule that governs AFFILIATIONS below. COMMUNITY_RAIL
+ * says he shows up. Collapsing them into one row would quietly upgrade the
+ * second set into the first, which is the one failure mode that would actually
+ * cost him something in front of a recruiter who checks.
  *
- * Six is the cap, and membership is decided by that rule alone rather than by
- * which logo files happen to exist. AppsFlyer, HUJI and BetterMind are just as
- * real and live in AFFILIATIONS; a seventh mark turns a rail into a list and
- * makes every individual one worth less.
+ * Order is descending recognition, with MEET deliberately last — it is the
+ * longest mark in the set and closes the row instead of splitting it.
+ *
+ * Membership is decided by that rule alone rather than by which logo files
+ * happen to exist. AppsFlyer, HUJI and BetterMind are just as real and live in
+ * AFFILIATIONS.
  *
  * This is set as logos now, which it was not before. The reason it used to be
  * type is that the source art was unusable — opaque white plates punching holes
  * in a dark page, a watermark checkerboard baked into MIT's background, a
  * Weizmann lockup on half a black slab, six heights and three different whites,
  * the whole thing reading as a sponsor wall from a school fair. What changed is
- * that all six were flattened to one white-on-alpha system offline and are now
- * drawn as masks at optically equalized weight (see `OrgMark`), so the row is
- * one material rather than six imports.
+ * that every mark was flattened to one white-on-alpha system offline and is now
+ * drawn as a mask at optically equalized weight (see `OrgMark`), so the rail is
+ * one material rather than ten imports.
  *
  * Every id here must have a `mark` in ORGS. The rail falls back to the wordmark
  * if one is missing, so a bad id degrades to the old typographic row instead of
@@ -213,8 +216,18 @@ export const CREDENTIAL_RAIL: ReadonlyArray<OrgId> = [
   "TECHNION",
   "DESY",
   "WEIZMANN",
+  "TRUST_CENTER",
   "MEET",
 ];
+
+/**
+ * The second, quieter row: rooms he is in, not rooms that picked him.
+ *
+ * Rendered smaller and dimmer than CREDENTIAL_RAIL on purpose. The hierarchy is
+ * the honesty — a viewer reads size as confidence, so these marks have to look
+ * like context rather than credentials.
+ */
+export const COMMUNITY_RAIL: ReadonlyArray<OrgId> = ["YC", "ZFELLOWS", "RHO"];
 
 /** Routes worth surfacing to someone who has more than forty seconds. */
 export const DEEPER: ReadonlyArray<{ label: string; to: string; note: string }> = [

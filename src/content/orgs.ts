@@ -16,6 +16,9 @@ export const ORG_IDS = [
   "TECHNION",
   "CONTRARY",
   "TRUST_CENTER",
+  "YC",
+  "ZFELLOWS",
+  "RHO",
 ] as const;
 
 export type OrgId = (typeof ORG_IDS)[number];
@@ -115,11 +118,9 @@ export const ORGS: Record<OrgId, Org> = {
     id: "WEIZMANN",
     name: "Weizmann Institute of Science",
     /*
-     * No logoSrc, and that is deliberate twice over. `WEIZMANN.png` is a GIF87a
-     * wearing a .png extension — browsers sniff the bytes and render it anyway,
-     * build tooling does not — and the mark below is cropped to the tree panel,
-     * which carries no name and so cannot stand in for a badge. A wordmark says
-     * "Weizmann" at any size; that is what a badge is for.
+     * No logoSrc, and that is deliberate. The mark below is cropped to the tree
+     * panel, which carries no name and so cannot stand in for a badge. A
+     * wordmark says "Weizmann" at any size; that is what a badge is for.
      */
     alt: "Weizmann Institute of Science",
     wordmark: "Weizmann",
@@ -163,6 +164,28 @@ export const ORGS: Record<OrgId, Org> = {
     name: "Martin Trust Center for MIT Entrepreneurship",
     alt: "Martin Trust Center for MIT Entrepreneurship",
     wordmark: "Martin Trust Center",
+    mark: { src: "/images/logos/mono-trust-center.png", width: 109, height: 112, scale: 1.2 },
+  },
+  YC: {
+    id: "YC",
+    name: "Y Combinator",
+    alt: "Y Combinator",
+    wordmark: "Y Combinator",
+    mark: { src: "/images/logos/mono-yc.png", width: 112, height: 112, scale: 1.01 },
+  },
+  ZFELLOWS: {
+    id: "ZFELLOWS",
+    name: "Z Fellows",
+    alt: "Z Fellows",
+    wordmark: "Z Fellows",
+    mark: { src: "/images/logos/mono-zfellows.png", width: 167, height: 112, scale: 1.1 },
+  },
+  RHO: {
+    id: "RHO",
+    name: "Rho",
+    alt: "Rho",
+    wordmark: "Rho",
+    mark: { src: "/images/logos/mono-rho.png", width: 244, height: 112, scale: 1.07 },
   },
 };
 
