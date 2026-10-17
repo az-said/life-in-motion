@@ -30,24 +30,23 @@ ${errorInfo ? `Component Stack: ${errorInfo.componentStack}` : ""}
 
   return (
     <div className="fixed inset-0 flex items-center justify-center bg-[rgb(var(--bg-0))] overflow-y-auto">
-      {/* Cinematic background layers */}
+      {/* AppLayout's background field, rebuilt — see AppErrorFallback for the
+          same note. Tokens rather than the literal cyan and 60% black, so a
+          crash does not change which site you are looking at. */}
       <div className="absolute inset-0">
-        {/* Base dark background */}
         <div className="absolute inset-0 bg-[rgb(var(--bg-0))]" />
-        
-        {/* Subtle animated gradient */}
-        <div
-          className="absolute inset-0 opacity-30"
-          style={{
-            background: "radial-gradient(circle at 50% 50%, rgba(120, 220, 255, 0.1) 0%, transparent 70%)",
-          }}
-        />
-        
-        {/* Vignette overlay */}
+
         <div
           className="absolute inset-0"
           style={{
-            background: "radial-gradient(circle at center, transparent 0%, rgba(0, 0, 0, 0.6) 100%)",
+            background: "radial-gradient(circle at 50% 50%, var(--glow) 0%, transparent 70%)",
+          }}
+        />
+
+        <div
+          className="absolute inset-0"
+          style={{
+            background: "radial-gradient(circle at center, transparent 0%, var(--vignette) 100%)",
           }}
         />
       </div>

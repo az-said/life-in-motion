@@ -83,15 +83,22 @@ export default function HeroMedia({
         {/* Top Scrim - Subtle header/media blending */}
         <TopScrim />
 
-        {/* Bottom Blend Overlay - For content readability */}
+        {/* Bottom blend, so white caption text stays legible over whatever the
+            lower third of the photograph happens to be.
+
+            `--scrim` rather than `--vignette`, and the distinction matters: the
+            vignette token frames the *page* and goes almost to nothing on the
+            paper ground, where this darkens an *image* and has to stay dark in
+            both themes. Lightening it would leave the text sitting on bare
+            photography. */}
         <div
           className="absolute inset-x-0 bottom-0 h-32 md:h-40 pointer-events-none z-10"
           style={{
             background: `
               linear-gradient(to top,
-                rgba(0, 0, 0, 0.6) 0%,
-                rgba(0, 0, 0, 0.4) 30%,
-                rgba(0, 0, 0, 0.2) 60%,
+                rgb(var(--scrim) / 0.6) 0%,
+                rgb(var(--scrim) / 0.4) 30%,
+                rgb(var(--scrim) / 0.2) 60%,
                 transparent 100%
               )
             `,
@@ -99,12 +106,12 @@ export default function HeroMedia({
           aria-hidden="true"
         />
 
-        {/* Radial gradient for depth */}
+        {/* Corner falloff, for depth. Same reasoning as above. */}
         <div
           className="absolute inset-0 pointer-events-none"
           style={{
             background:
-              "radial-gradient(circle at center, transparent 0%, rgba(0, 0, 0, 0.3) 100%)",
+              "radial-gradient(circle at center, transparent 0%, rgb(var(--scrim) / 0.3) 100%)",
           }}
           aria-hidden="true"
         />

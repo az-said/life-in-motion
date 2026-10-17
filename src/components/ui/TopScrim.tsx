@@ -1,7 +1,12 @@
 /**
- * TopScrim - Subtle top gradient overlay for header/media blending
- * Provides a very shallow gradient that blends hero media with fixed header
- * Keeps it cinematic and subtle, no harsh seams
+ * TopScrim — a shallow darkening at the top edge of hero media, so the image
+ * does not collide with the fixed header above it.
+ *
+ * Reads `--scrim`, and that token is dark in *both* themes on purpose. A scrim's
+ * job is to darken what is underneath it; this one sits on photography, which is
+ * its own set of colours regardless of which ground the page is on. Lightening
+ * it for the paper theme would not make a gentler scrim, it would make no scrim
+ * — and the seam this element exists to hide would come back.
  */
 export default function TopScrim() {
   return (
@@ -10,8 +15,8 @@ export default function TopScrim() {
       style={{
         background: `
           linear-gradient(to bottom,
-            rgba(0, 0, 0, 0.6) 0%,
-            rgba(0, 0, 0, 0.2) 50%,
+            rgb(var(--scrim) / 0.6) 0%,
+            rgb(var(--scrim) / 0.2) 50%,
             transparent 100%
           )
         `,

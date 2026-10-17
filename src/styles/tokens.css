@@ -1,29 +1,91 @@
 /*
- * The six values the whole site is grounded on.
+ * The values the whole site is grounded on.
  *
- * Space-separated RGB channels rather than hex, so every consumer can apply
- * its own alpha: `rgb(var(--line) / 0.1)` in CSS, `border-line/10` in markup.
+ * Each one is declared twice, in two formats, and the duplication is forced
+ * rather than sloppy:
  *
- * Names are stated by role, not by appearance — `--bg-0`, not `--charcoal` —
- * which is what allows the values below to change without any consumer
- * becoming a lie.
+ *   - Space-separated RGB channels (`--fg-0: 25 25 25`) so CSS and arbitrary
+ *     Tailwind values can apply their own alpha — `rgb(var(--line) / 0.1)`.
+ *   - A literal hex `--color-*` for the Tailwind theme layer, because Tailwind
+ *     can only attach an opacity modifier to a value it can statically parse
+ *     as a colour. Handing it `rgb(var(--line))` silently produces a solid
+ *     border where a 10% hairline belongs.
+ *
+ * Names state a role, not an appearance — `--bg-0`, never `--cream` — which is
+ * what lets the light and dark blocks below hold opposite values without any
+ * consumer becoming a lie.
  */
 :root{
-    --bg-0: 10 10 12;       /* page ground */
-    --bg-1: 16 16 20;       /* raised surface */
-    --bg-2: 22 22 28;       /* second step up; the far end of panel gradients.
-                               HonorsPage has been painting a gradient to this
-                               name since before it existed — an undefined
-                               custom property makes the declaration invalid at
-                               computed-value time, so that card's gradient has
-                               simply not been rendering. */
-    --fg-0: 245 245 247;    /* primary text */
-    --fg-1: 200 200 210;    /* muted text */
-    --line: 255 255 255;    /* hairlines, applied via opacity */
+    --bg-0: 245 244 238;    /* page ground — warm paper */
+    --bg-1: 255 255 255;    /* raised surface */
+    --bg-2: 237 234 224;    /* second step; the far end of panel gradients */
+    --fg-0: 25 25 25;       /* primary text */
+    --fg-1: 61 61 58;       /* muted text */
+    --line: 25 25 25;       /* hairlines, applied via opacity */
     --scrim: 0 0 0;         /* darkening over content; dark in every theme */
-    --accent: 34 211 238;   /* #22D3EE — saturated cyan */
+    --accent: 204 120 92;   /* #CC785C — clay */
+
+    /* The fixed background field in AppLayout. Complete colours rather than
+       channels, because each theme wants a different alpha as well as a
+       different hue. On paper the glow is a warm breath of the accent and the
+       vignette barely exists — the dark values carried straight over would be
+       a cyan wash under a heavy grey frame. */
+    --glow: rgb(204 120 92 / 0.10);
+    --vignette: rgb(25 25 25 / 0.05);
+
+    /* The header bar's lift, at rest and once scrolled. A token rather than a
+       `--scrim` alpha because the two grounds want different kinds of shadow:
+       paper gets a shallow one and leans on its hairline border, where the dark
+       ground needs a deep one to separate the bar from imagery behind it. */
+    --header-shadow-rest: 0 1px 0 rgb(25 25 25 / 0.04);
+    --header-shadow: 0 8px 24px rgb(25 25 25 / 0.07);
+
+    --color-ground: #f5f4ee;
+    --color-surface: #ffffff;
+    --color-ink: #191919;
+    --color-ink-muted: #3d3d3a;
+    --color-line: #191919;
+    --color-scrim: #000000;
+    --color-accent: #cc785c;
   }
-  
+
+  /*
+   * The dark ground, scoped rather than global.
+   *
+   * The story and the intro keep it: those routes are built around darkness,
+   * their imagery is composed against black, and stepping into the dark and
+   * back out is the point. `AppLayout` sets `data-theme` on `<html>`.
+   *
+   * Redefining `--color-*` here is what makes the scope work. Tailwind emits
+   * `color-mix(in oklab, var(--color-line) 10%, transparent)`, so overriding
+   * the custom property re-resolves every utility underneath — no second set
+   * of class names, and no duplicated utilities in the stylesheet.
+   */
+  [data-theme="dark"]{
+    --bg-0: 10 10 12;
+    --bg-1: 16 16 20;
+    --bg-2: 22 22 28;
+    --fg-0: 245 245 247;
+    --fg-1: 200 200 210;
+    --line: 255 255 255;
+    --scrim: 0 0 0;
+    --accent: 34 211 238;   /* #22D3EE — the cyan stays where the ground is dark */
+
+    --glow: rgb(120 220 255 / 0.14);
+    --vignette: rgb(0 0 0 / 0.40);
+
+    --header-shadow-rest: 0 10px 30px rgb(0 0 0 / 0.45);
+    --header-shadow: 0 12px 40px rgb(0 0 0 / 0.55);
+
+    --color-ground: #0a0a0c;
+    --color-surface: #101014;
+    --color-ink: #f5f5f7;
+    --color-ink-muted: #c8c8d2;
+    --color-line: #ffffff;
+    --color-scrim: #000000;
+    --color-accent: #22d3ee;
+  }
+
   /* Film grain overlay (subtle) */
   .noise-overlay{
     position: fixed;
@@ -38,8 +100,14 @@
   .glass{
     background: rgb(var(--fg-0) / 0.06);
     border: 1px solid rgb(var(--line) / 0.10);
-    backdrop-filter: blur(14px);
+    /* Prefix first, standard second, and the order is load-bearing rather than
+       conventional. Lightning CSS treats the pair as one logical property and
+       keeps whichever comes last, dropping the other; written the natural way
+       round — standard then prefix — the build emitted *only*
+       `-webkit-backdrop-filter`, so every glass panel had been rendering flat
+       in Firefox. Caught by grepping the built stylesheet, not the source. */
     -webkit-backdrop-filter: blur(14px);
+    backdrop-filter: blur(14px);
   }
 
   /* Hairline border */

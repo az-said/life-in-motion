@@ -113,8 +113,8 @@ export default function HonorsPage() {
                     style={{
                       background: `
                         linear-gradient(to bottom,
-                          rgba(0, 0, 0, 0.6) 0%,
-                          rgba(0, 0, 0, 0.2) 50%,
+                          rgb(var(--scrim) / 0.6) 0%,
+                          rgb(var(--scrim) / 0.2) 50%,
                           transparent 100%
                         )
                       `,

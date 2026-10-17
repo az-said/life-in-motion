@@ -6,6 +6,92 @@ what was measured, what is still open. Plan and phase status live in
 
 ---
 
+## 2026-10-16 (last) — Phase 1b-ii: the ground turns to paper
+
+The values change. `:root` is warm paper with dark ink and a clay accent; the
+dark set moves wholesale into `[data-theme="dark"]`, which `AppLayout` puts on
+`<html>` for the intro and the story only. Those two routes are composed against
+black and stepping into the dark and back out is the point, so they keep it.
+
+`useLayoutEffect`, not `useEffect`. With a plain effect a direct load of /story
+paints one frame of paper first, and a white flash in front of a cinematic
+opening is exactly the kind of detail that reads as cheap.
+
+**The scoped override is doing real work, and it is measurable.** On /story
+`--color-line` resolves to `#ffffff` and `border-line/10` computes to
+`oklab(0.999994 … / 0.1)` — Tailwind's `color-mix` rule re-reading the custom
+property under the new scope. That is the whole reason 1b-i used plain `@theme`
+with literal hex instead of `@theme inline`: one set of class names, two
+grounds, no duplicated utilities.
+
+**Three things had the dark ground hardcoded and could not have known.** Each
+one was correct, just written in a colour that stopped being true:
+
+- `HeaderBackdrop` painted a five-stop `rgba(10, 10, 12, …)` gradient, so there
+  was a black band across the top of every page.
+- The header bar animated to `rgba(10, 10, 12, 0.85)` through a Framer `animate`
+  object. Same band, and it could not simply be tokenised — Framer cannot
+  interpolate a `var()`-backed colour, it writes the string to the style
+  attribute and the transition snaps. Replaced with a `data-scrolled` attribute
+  and a CSS rule pair. On /story the computed result is byte-identical to the
+  old hardcoded values: `rgba(10,10,12,.85)`, `0 12px 40px rgba(0,0,0,.55)`.
+- Both error fallbacks rebuild `AppLayout`'s background field, with the cyan
+  glow and a 60% black vignette written out by hand. A crash on a paper page
+  used to flash a completely different site.
+
+**A shadow is not an opacity.** `--header-shadow` is its own token rather than a
+`--scrim` alpha, because the two grounds want different kinds of shadow, not
+different strengths of one. A 40px blur at 55% black under a bar on warm paper
+does not read as depth, it reads as dirt. Paper gets `0 8px 24px` at 7% and
+leans on its hairline border instead.
+
+**The mask paid off exactly as designed.** Eleven credential marks recoloured in
+one line — `.cred-rail { color: rgb(var(--fg-0) / var(--cred-rest)) }` — because
+`.cred-mark` paints `currentColor` through a mask and never had a colour baked
+in. No mark file was rebuilt. This is the second time that decision has saved a
+pass over the art.
+
+**Scrim versus vignette, settled by what is underneath.** `TopScrim`,
+`HeroMedia`'s bottom blend and corner falloff, and the `HonorsPage` top scrim
+all moved to `--scrim`, which stays dark in both themes. They sit on
+photography, which is its own set of colours regardless of the page ground;
+lightening them would not make a gentler scrim, it would make no scrim. The
+vignette token is the opposite case — it frames the *page*, so on paper it goes
+almost to nothing.
+
+**A build bug that has been shipping for a while, found by grepping the output
+rather than the source.** `.glass` declared `backdrop-filter` then
+`-webkit-backdrop-filter`. Lightning CSS treats the pair as one logical property
+and keeps whichever comes last, so the built stylesheet contained *only* the
+prefixed form and every glass panel rendered flat in Firefox. Reversing the
+order emits both. The rule now has a comment on it in `tokens.css`, because the
+natural way to write it is the broken way.
+
+**A decorative element was scrolling the whole site sideways on phones.**
+`DashboardHero`'s ambient wash is 760px wide, centred with `-translate-x-1/2`,
+`max-w-none`, and nothing in its ancestor chain clips. On a 390px viewport it
+runs from −185px to 575px; the left overhang is free, the right 185px is real
+document overflow. Now `w-[min(760px,100vw)]`, which is full-bleed on a phone
+and identical above 760px. Measured in-flow overflow at 390px across all seven
+light routes: zero.
+
+**The real finding, and it is not a colour.** /about renders with its body text
+at `opacity: 0`. Nothing to do with this change — the page is untouched since
+`59b9a98` — but the cause is 40 Framer `initial={{ opacity: 0, … }}` entry
+animations across 10 files, which strand on their first frame whenever
+`requestAnimationFrame` does not run. On /ventures the same thing freezes four
+cards at `x: 30` and *that* produces horizontal overflow too, which is how a
+motion bug disguises itself as a layout bug. The project already has a rule
+against this exact pattern — written down in `AppLayout` after it blanked
+/story — and these forty are the remaining instances. Phase 1f.
+
+Verified: `tsc --noEmit`, `eslint`, `vite build` clean; no `rgba(10,10,12)` or
+literal cyan left anywhere in the built stylesheet; no documentation-sourced
+classes; story keeps one viewport (733px content box under a 67px header, 6734px
+of snap content) and does not scroll the document.
+
+---
+
 ## 2026-10-16 (later still) — Phase 1b-i: semantic colour names, no visual change
 
 Split 1b in two on purpose. This half renames ~280 literal utilities to

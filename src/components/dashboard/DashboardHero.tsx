@@ -174,10 +174,25 @@ export default function DashboardHero() {
             and it is what keeps the hero from reading as a terminal window.
             It lives in here rather than directly under <header> because the
             header has to stay unpositioned for the portrait panel above to
-            reach the viewport. */}
+            reach the viewport.
+
+            The width is `min(760px, 100vw)` rather than a flat `760px`, and
+            that is a bug fix rather than a refinement. Centred on a 390px
+            phone, a fixed 760px box runs from −185px to 575px; nothing in its
+            ancestor chain clips, so those 185px on the right were real
+            document overflow — the whole page scrolled sideways on every
+            phone, dragged there by an element that is `aria-hidden` and purely
+            decorative. Overflow to the *left* is harmless, which is why this
+            only ever showed up as a one-directional sideways drift and was
+            easy to read as a layout problem somewhere in the content.
+
+            Capping at the viewport keeps the wash full-bleed on a phone and
+            leaves the desktop composition untouched: above 760px the `min()`
+            resolves to 760px, and from `lg` up the element is pinned right
+            anyway. */}
         <div
           aria-hidden="true"
-          className="pointer-events-none absolute -top-40 left-1/2 h-[560px] w-[760px] max-w-none -translate-x-1/2 rounded-full bg-[radial-gradient(closest-side,rgb(var(--accent)/0.22),transparent)] blur-3xl lg:left-auto lg:right-0 lg:translate-x-0"
+          className="pointer-events-none absolute -top-40 left-1/2 h-[560px] w-[min(760px,100vw)] max-w-none -translate-x-1/2 rounded-full bg-[radial-gradient(closest-side,rgb(var(--accent)/0.22),transparent)] blur-3xl lg:left-auto lg:right-0 lg:translate-x-0"
         />
 
         {/* ---------- Candid portrait, phones only ----------

@@ -49,18 +49,26 @@
  * is dark, and tokenising them would turn them invisible the moment the ground
  * goes light.
  */
+/*
+ * Declared here so Tailwind generates the utilities, and declared again in
+ * tokens.css so `[data-theme]` can override them. These values are the light
+ * ground and must stay in step with the `:root` block there.
+ */
 @theme {
-  --color-ground: #0a0a0c;
-  --color-surface: #101014;
-  --color-ink: #f5f5f7;
-  --color-ink-muted: #c8c8d2;
-  --color-line: #ffffff;
+  --color-ground: #f5f4ee;
+  --color-surface: #ffffff;
+  --color-ink: #191919;
+  --color-ink-muted: #3d3d3a;
+  --color-line: #191919;
   --color-scrim: #000000;
-  --color-accent: #22d3ee;
+  --color-accent: #cc785c;
 }
 
 html {
-  color-scheme: dark;
+  /* Drives the form controls, the scrollbar and any UA-painted surface.
+     Follows `data-theme` rather than being fixed, so the story route's native
+     widgets stay dark along with everything else there. */
+  color-scheme: light;
 
   /*
    * Reserve the scrollbar's width permanently.
@@ -72,6 +80,10 @@ html {
    * One declaration replaces all of it.
    */
   scrollbar-gutter: stable;
+}
+
+html[data-theme="dark"] {
+  color-scheme: dark;
 }
 
 /*
@@ -261,6 +273,42 @@ body {
 }
 
 /*
+ * The header bar's two appearances.
+ *
+ * These used to be a Framer `animate` object holding literal
+ * `rgba(10, 10, 12, …)` — the dark ground, written out by hand. That is exactly
+ * the kind of value that cannot survive a second theme: the moment the page
+ * went to paper the bar painted a black band across the top of every route.
+ *
+ * Now the colour comes from `--bg-0` and the shadow from its own token, so both
+ * follow whichever ground is in scope. It lives in CSS rather than in Framer
+ * because Framer cannot interpolate a colour expressed through `var()` — it
+ * writes the string to the style attribute and the transition snaps. A CSS
+ * transition reads the resolved value and crossfades correctly.
+ *
+ * The shadow is a token rather than a `--scrim` opacity because the two grounds
+ * want different *kinds* of shadow, not different strengths of one. A 40px blur
+ * at 55% black under a bar on warm paper does not read as depth, it reads as
+ * dirt; paper gets a shallow, nearly-transparent lift and leans on the hairline
+ * border instead.
+ */
+[data-header] {
+  background-color: rgb(var(--bg-0) / 0);
+  box-shadow: var(--header-shadow-rest);
+  transition: background-color 200ms ease-out, box-shadow 200ms ease-out,
+    backdrop-filter 200ms ease-out;
+}
+
+[data-header][data-scrolled] {
+  background-color: rgb(var(--bg-0) / 0.85);
+  box-shadow: var(--header-shadow);
+  /* Prefix before standard — see the note on `.glass` in tokens.css. Reversed,
+     the build drops the unprefixed property entirely. */
+  -webkit-backdrop-filter: blur(12px) saturate(140%);
+  backdrop-filter: blur(12px) saturate(140%);
+}
+
+/*
  * Credential rail — the six institution marks under the hero.
  *
  * Drawn as a mask over `currentColor` rather than as an `<img>`. That is not
@@ -302,7 +350,11 @@ body {
  */
 .cred-rail {
   --cred-rest: 0.62;
-  color: rgb(255 255 255 / var(--cred-rest));
+  /* Reads the ink token rather than literal white. `.cred-mark` paints itself
+     with `background-color: currentColor` through a mask, so this one line is
+     the whole recolour — the mark files never had a colour baked in and do not
+     need rebuilding for the light ground. */
+  color: rgb(var(--fg-0) / var(--cred-rest));
   transition: color 220ms ease;
 }
 
@@ -339,7 +391,7 @@ body {
 
 @media (hover: hover) {
   .cred-rail:hover {
-    color: rgb(255 255 255 / calc(var(--cred-rest) * 0.48));
+    color: rgb(var(--fg-0) / calc(var(--cred-rest) * 0.48));
   }
 
   /* Both forms, because a mark may or may not be wrapped in a link and the

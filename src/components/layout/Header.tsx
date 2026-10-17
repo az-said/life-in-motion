@@ -161,7 +161,21 @@ export default function Header() {
       {/* Header Backdrop - Shallow scrim gradient behind header for smooth transition */}
       <HeaderBackdrop />
       
-      <motion.div
+      {/* The scrolled/at-rest appearance is a CSS class pair driven by
+          `data-scrolled`, not a Framer `animate` object, and the reason is the
+          tokens. The bar used to animate to the literal `rgba(10, 10, 12, …)`,
+          which is the dark ground — on paper that painted a black band across
+          the top of every page. The colour has to come from `--bg-0` so it
+          follows the theme, and Framer cannot interpolate a `var()`-backed
+          colour: it hands the string to the style attribute and the transition
+          snaps. CSS transitions on a custom-property-derived colour work fine,
+          so the rules live in index.css under `[data-header]`.
+
+          A transition rather than a keyframed animation, deliberately — the
+          house rule against animating opacity is about a frozen `0%` frame in a
+          backgrounded tab, and a transition has no frame to freeze in. Worst
+          case here is the bar arriving at its final colour instantly. */}
+      <div
         ref={headerRef}
         // Tighter vertical padding on a phone. The controls inside grew to 44px
         // tap targets, which would otherwise push the bar to ~77px and eat the
@@ -169,15 +183,7 @@ export default function Header() {
         // below, so the page offset follows automatically either way.
         className="fixed top-0 left-0 right-0 z-30 flex items-center justify-between px-4 py-2 sm:px-6 sm:py-4 border-b border-line/10"
         data-header
-        initial={false}
-        animate={{
-          backgroundColor: isScrolled ? "rgba(10, 10, 12, 0.85)" : "rgba(10, 10, 12, 0)",
-          backdropFilter: isScrolled ? "blur(12px) saturate(180%)" : "blur(0px)",
-          boxShadow: isScrolled 
-            ? "0 12px 40px rgba(0, 0, 0, 0.55)" 
-            : "0 10px 30px rgba(0, 0, 0, 0.45)", // Subtle shadow always present
-        }}
-        transition={{ duration: 0.2, ease: "easeOut" }}
+        data-scrolled={isScrolled ? "" : undefined}
       >
         {/* min-w-0 lets this column shrink instead of forcing the row wider than
             the viewport, so the title truncates rather than wrapping the header
@@ -257,7 +263,7 @@ export default function Header() {
             />
           </div>
         </div>
-      </motion.div>
+      </div>
     </>
   );
 }

@@ -36,24 +36,26 @@ ${errorStack ? `Stack: ${errorStack}` : ""}
 
   return (
     <div className="fixed inset-0 flex items-center justify-center bg-[rgb(var(--bg-0))] overflow-y-auto">
-      {/* Cinematic background layers */}
+      {/* The same background field as AppLayout, rebuilt here because this
+          screen replaces the layout rather than rendering inside it. It reads
+          the same two tokens for exactly that reason: the glow and the vignette
+          were written out as a literal cyan and a 60% black, which is the dark
+          ground's field, so a crash on a paper-ground page used to flash a
+          completely different site. */}
       <div className="absolute inset-0">
-        {/* Base dark background */}
         <div className="absolute inset-0 bg-[rgb(var(--bg-0))]" />
-        
-        {/* Subtle animated gradient */}
-        <div
-          className="absolute inset-0 opacity-30"
-          style={{
-            background: "radial-gradient(circle at 50% 50%, rgba(120, 220, 255, 0.1) 0%, transparent 70%)",
-          }}
-        />
-        
-        {/* Vignette overlay */}
+
         <div
           className="absolute inset-0"
           style={{
-            background: "radial-gradient(circle at center, transparent 0%, rgba(0, 0, 0, 0.6) 100%)",
+            background: "radial-gradient(circle at 50% 50%, var(--glow) 0%, transparent 70%)",
+          }}
+        />
+
+        <div
+          className="absolute inset-0"
+          style={{
+            background: "radial-gradient(circle at center, transparent 0%, var(--vignette) 100%)",
           }}
         />
       </div>

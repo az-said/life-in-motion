@@ -1,4 +1,4 @@
-import { Suspense, useEffect } from "react";
+import { Suspense, useEffect, useLayoutEffect } from "react";
 import { Outlet, useLocation } from "react-router-dom";
 import Header from "../../components/layout/Header";
 import PageFooter from "../../components/layout/PageFooter";
@@ -15,6 +15,29 @@ export default function AppLayout() {
   useEffect(() => {
     devLog("[APP NAV]", location.pathname);
   }, [location.pathname]);
+
+  /*
+   * The site is grounded in warm paper; the story and the intro are not.
+   * Those two are built around darkness — their imagery is composed against
+   * black and the whole effect is stepping into the dark and back out — so
+   * they get `data-theme="dark"` and the token block in tokens.css re-grounds
+   * everything underneath.
+   *
+   * On `<html>` rather than on a wrapper because the background field below is
+   * a sibling of the page content, not a descendant of it; scoping to the
+   * content would leave the field lit while the page went dark. It also lets
+   * `color-scheme` follow, which is what darkens the scrollbar and any native
+   * control.
+   *
+   * `useLayoutEffect` so the attribute lands before paint. With a plain effect
+   * a direct load of /story shows one frame of the light ground first, and a
+   * white flash in front of a cinematic opening is exactly the kind of detail
+   * that reads as cheap.
+   */
+  useLayoutEffect(() => {
+    const dark = isIntroRoute || isStoryRoute;
+    document.documentElement.dataset.theme = dark ? "dark" : "light";
+  }, [isIntroRoute, isStoryRoute]);
 
   return (
     <>
@@ -36,11 +59,14 @@ export default function AppLayout() {
         {/* Base dark background */}
         <div className="absolute inset-0 bg-[rgb(var(--bg-0))]" />
 
-        {/* Cool glow, off-centre so the field is not perfectly symmetric */}
-        <div className="absolute inset-0 bg-[radial-gradient(circle_at_30%_35%,rgba(120,220,255,0.14)_0%,transparent_55%)]" />
+        {/* Glow, off-centre so the field is not perfectly symmetric. Both this
+            and the vignette read their colour from a token, because the two
+            grounds want different hues and different strengths — the dark
+            values on paper would be a cyan wash inside a heavy grey frame. */}
+        <div className="absolute inset-0 bg-[radial-gradient(circle_at_30%_35%,var(--glow)_0%,transparent_55%)]" />
 
         {/* Vignette */}
-        <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,transparent_0%,rgba(0,0,0,0.4)_100%)]" />
+        <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,transparent_0%,var(--vignette)_100%)]" />
       </div>
 
       {/* Header — `fixed`, and now genuinely fixed to the viewport. Inside the
