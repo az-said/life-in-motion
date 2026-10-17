@@ -182,8 +182,14 @@ the finished ground.
       reacts, `/story` keeps one viewport and survives a nav round-trip, skip
       button resolves against the viewport, lock is correct under nesting with
       zero width shift. See `JOURNAL.md`.
-- [ ] **1b. Semantic colour tokens + warm-light inversion.** 369 hardcoded
-      references migrated in verified batches.
+- [x] **1b. Semantic colour tokens + warm-light inversion.** *Done 2026-10-16,
+      in two commits.* `59b9a98` renamed ~280 literals to `line` / `ink` /
+      `scrim` and was proved pixel-neutral by diffing the colour multiset of the
+      built stylesheet against the deployed one. `1027faf` changed the values:
+      `:root` is paper, the dark set lives in `[data-theme="dark"]`, applied to
+      `<html>` for the intro and story only. Media chrome keeps literal white
+      and black on purpose — those controls sit on photography, not on a theme.
+      See `JOURNAL.md`.
 - [ ] **1c. Type.** Self-hosted woff2 pairing, fluid `clamp()` scale across
       20rem→120rem (steven.com's method — no type breakpoints), negative
       tracking scaled with size.
@@ -195,6 +201,18 @@ the finished ground.
 - [ ] **1f. Motion primitives.** Two easings and one dominant duration, per the
       teardowns. Plus the scroll-scrubbed per-character reveal (decision 8) and
       the self-drawing signature (below).
+      **Promoted to a correctness fix, not a polish pass.** 40 Framer
+      `initial={{ opacity: 0, … }}` entry animations across 10 files strand on
+      their first frame whenever `requestAnimationFrame` does not run — a
+      backgrounded tab, a zero-height viewport. Observed: /about renders its
+      body text at `opacity: 0`, and /ventures freezes four cards at `x: 30`,
+      which produces horizontal overflow as well. This is the same failure the
+      `AppLayout` comment already warns about after it blanked /story. Files:
+      `AboutPage`, `AtlasPage`, `BooksPage`, `ContactPage`, `DashboardPage`,
+      `VenturesPage`, `IntroGatePage`, `RidahSequence`, `CinematicScene`,
+      `YouTubeEmbed`. The replacement is the existing transform-only `.reveal`
+      system in `index.css`, whose worst case is "it did not move" rather than
+      "it is not there".
 - [ ] **1g. Lenis**, desktop only, driven off one ticker. Last, because it
       depends on 1a.
 - [ ] Verify at real device widths, not a narrow desktop window
