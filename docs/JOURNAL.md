@@ -75,15 +75,31 @@ document overflow. Now `w-[min(760px,100vw)]`, which is full-bleed on a phone
 and identical above 760px. Measured in-flow overflow at 390px across all seven
 light routes: zero.
 
-**The real finding, and it is not a colour.** /about renders with its body text
-at `opacity: 0`. Nothing to do with this change — the page is untouched since
-`59b9a98` — but the cause is 40 Framer `initial={{ opacity: 0, … }}` entry
-animations across 10 files, which strand on their first frame whenever
-`requestAnimationFrame` does not run. On /ventures the same thing freezes four
-cards at `x: 30` and *that* produces horizontal overflow too, which is how a
-motion bug disguises itself as a layout bug. The project already has a rule
-against this exact pattern — written down in `AppLayout` after it blanked
-/story — and these forty are the remaining instances. Phase 1f.
+**One finding I had to walk back, which is the useful part.** Mid-verification
+/about showed its body text at `opacity: 0` and /ventures showed four cards
+offset at `x: 30` — far enough right to overflow a 390px viewport. Both looked
+like real bugs and I wrote them up as real bugs. They are not. There are 40
+Framer `initial={{ opacity: 0, … }}` entry animations across 10 files, they
+advance only on `requestAnimationFrame`, and the preview window reports
+`document.hidden === true`, so no frames were being painted. Forcing two frames
+with screenshots walked the opacity up — 0 → 0.117 → 1 — and both pages
+resolved correctly. The animations recover; nothing is stranded.
+
+Worth keeping the correction visible rather than quietly deleting the claim,
+because this is the *third* time this session that a frozen frame callback has
+produced a convincing false positive. Phase 1a had the same thing: the header
+never changed colour on scroll, and the code was right the whole time. Any
+assertion about this codebase that depends on a frame having been painted has
+to be re-checked against `document.hidden` before it is believed, and a
+measurement taken in this harness is only trustworthy for things that are true
+at layout time.
+
+What survives as a genuine item for 1f is smaller and different: forty entry
+animations gating content on opacity still contradicts the project's own rule —
+written into `AppLayout` after `popLayout` blanked /story — and the `x: 30`
+offsets do produce horizontal overflow for the duration of the animation on a
+narrow screen. That is a real if transient layout effect, and the
+transform-only `.reveal` system already in `index.css` is the replacement.
 
 Verified: `tsc --noEmit`, `eslint`, `vite build` clean; no `rgba(10,10,12)` or
 literal cyan left anywhere in the built stylesheet; no documentation-sourced

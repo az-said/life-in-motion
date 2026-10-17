@@ -201,18 +201,19 @@ the finished ground.
 - [ ] **1f. Motion primitives.** Two easings and one dominant duration, per the
       teardowns. Plus the scroll-scrubbed per-character reveal (decision 8) and
       the self-drawing signature (below).
-      **Promoted to a correctness fix, not a polish pass.** 40 Framer
-      `initial={{ opacity: 0, … }}` entry animations across 10 files strand on
-      their first frame whenever `requestAnimationFrame` does not run — a
-      backgrounded tab, a zero-height viewport. Observed: /about renders its
-      body text at `opacity: 0`, and /ventures freezes four cards at `x: 30`,
-      which produces horizontal overflow as well. This is the same failure the
-      `AppLayout` comment already warns about after it blanked /story. Files:
+      **Scoped during 1b verification.** 40 Framer
+      `initial={{ opacity: 0, … }}` entry animations across 10 files:
       `AboutPage`, `AtlasPage`, `BooksPage`, `ContactPage`, `DashboardPage`,
       `VenturesPage`, `IntroGatePage`, `RidahSequence`, `CinematicScene`,
-      `YouTubeEmbed`. The replacement is the existing transform-only `.reveal`
-      system in `index.css`, whose worst case is "it did not move" rather than
-      "it is not there".
+      `YouTubeEmbed`. Replace with the transform-only `.reveal` system already
+      in `index.css`, whose worst case is "it did not move" rather than "it is
+      not there". Two reasons, neither of them urgent:
+      gating content on opacity contradicts the rule written into `AppLayout`,
+      and the `x: ±30` offsets overflow a 390px viewport for the duration of
+      the animation. Checked and explicitly *not* a bug: they do not strand.
+      They advance only on `requestAnimationFrame`, so they look frozen in a
+      hidden window and complete normally in a real one — see `JOURNAL.md` for
+      why that distinction cost a false positive.
 - [ ] **1g. Lenis**, desktop only, driven off one ticker. Last, because it
       depends on 1a.
 - [ ] Verify at real device widths, not a narrow desktop window
