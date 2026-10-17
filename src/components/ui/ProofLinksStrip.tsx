@@ -57,12 +57,12 @@ export default function ProofLinksStrip({
               className={clsx(
                 "inline-flex items-center gap-1.5 px-3 py-1.5 rounded-md",
                 "text-sm font-medium text-[rgb(var(--fg-0))]",
-                "bg-white/5 hover:bg-white/10 active:bg-white/15",
-                "border border-white/10 hover:border-white/20",
+                "bg-ink/5 hover:bg-ink/10 active:bg-ink/15",
+                "border border-line/10 hover:border-line/20",
                 "transition-all duration-200 ease-out",
                 "hover:-translate-y-0.5 active:translate-y-0",
                 "hover:shadow-[0_2px_8px_rgba(120,220,255,0.1)]",
-                "focus:outline-none focus:ring-2 focus:ring-white/20 focus:ring-offset-1 focus:ring-offset-transparent",
+                "focus:outline-none focus:ring-2 focus:ring-line/20 focus:ring-offset-1 focus:ring-offset-transparent",
                 "group"
               )}
             >

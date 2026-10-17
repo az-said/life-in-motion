@@ -1,9 +1,26 @@
+/*
+ * The six values the whole site is grounded on.
+ *
+ * Space-separated RGB channels rather than hex, so every consumer can apply
+ * its own alpha: `rgb(var(--line) / 0.1)` in CSS, `border-line/10` in markup.
+ *
+ * Names are stated by role, not by appearance — `--bg-0`, not `--charcoal` —
+ * which is what allows the values below to change without any consumer
+ * becoming a lie.
+ */
 :root{
-    --bg-0: 10 10 12;       /* deep charcoal */
-    --bg-1: 16 16 20;
-    --fg-0: 245 245 247;    /* near-white */
+    --bg-0: 10 10 12;       /* page ground */
+    --bg-1: 16 16 20;       /* raised surface */
+    --bg-2: 22 22 28;       /* second step up; the far end of panel gradients.
+                               HonorsPage has been painting a gradient to this
+                               name since before it existed — an undefined
+                               custom property makes the declaration invalid at
+                               computed-value time, so that card's gradient has
+                               simply not been rendering. */
+    --fg-0: 245 245 247;    /* primary text */
     --fg-1: 200 200 210;    /* muted text */
-    --line: 255 255 255;    /* hairline borders via opacity */
+    --line: 255 255 255;    /* hairlines, applied via opacity */
+    --scrim: 0 0 0;         /* darkening over content; dark in every theme */
     --accent: 34 211 238;   /* #22D3EE — saturated cyan */
   }
   
@@ -19,15 +36,15 @@
   
   /* Glass panel utility */
   .glass{
-    background: rgba(255,255,255,0.06);
-    border: 1px solid rgba(255,255,255,0.10);
+    background: rgb(var(--fg-0) / 0.06);
+    border: 1px solid rgb(var(--line) / 0.10);
     backdrop-filter: blur(14px);
     -webkit-backdrop-filter: blur(14px);
   }
-  
+
   /* Hairline border */
   .hairline{
-    border: 1px solid rgba(255,255,255,0.10);
+    border: 1px solid rgb(var(--line) / 0.10);
   }
   
   /* Hide scrollbar */

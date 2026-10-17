@@ -1,7 +1,63 @@
-@import "tailwindcss";
+/*
+ * `source(none)` plus an explicit `@source` because Tailwind 4 otherwise
+ * auto-detects from the git root and scans every text file it finds — which
+ * includes `docs/`. A class name written as an *example* in a planning
+ * document was being compiled into the production stylesheet; the migration
+ * notes in `docs/REBUILD-PLAN.md` shipped a real `bg-surface/5` rule to every
+ * visitor. Restricting the scan to `src/` is the fix, and it also means
+ * markdown can discuss class names without side effects.
+ */
+@import "tailwindcss" source(none);
+@source "./";
 
 @import "./styles/tokens.css";
 @import "./styles/microinteractions.css";
+
+/*
+ * Semantic colour utilities.
+ *
+ * These exist so the site can be re-grounded by editing `tokens.css` alone.
+ * Before this, roughly 280 utilities named a literal — `border-white/10`,
+ * `bg-white/5` — which encodes "the page is dark" into every component that
+ * draws a hairline, and makes a theme change a 280-file edit rather than a
+ * six-value one.
+ *
+ * `@theme inline` rather than plain `@theme`, and the distinction is the whole
+ * mechanism. Plain `@theme` emits `var(--color-line)`, which resolves once
+ * against `:root`; a `[data-theme]` scope further down the tree could never
+ * override it. `inline` emits the underlying `rgb(var(--line))` at each use
+ * site, so it re-resolves inside whatever scope it lands in — which is what
+ * lets the story route stay dark on an otherwise light site without a second
+ * set of tokens.
+ *
+ * Opacity modifiers still work: Tailwind wraps these in `color-mix`, which is
+ * happy with a `var()`-backed colour.
+ *
+ * Three names, because the literals were doing three different jobs:
+ *
+ *   - `line`    hairlines, rings, dividers. Was `white/10`–`white/30`.
+ *   - `ink`     text, and translucent panels tinted toward the text colour.
+ *               Was `text-white/N` and `bg-white/5`.
+ *   - `scrim`   darkening laid over content — modal backdrops, image
+ *               gradients. Was `black/N`. Stays dark in both themes, because a
+ *               scrim's job is to darken whatever is under it; a light scrim
+ *               on a light page is not the same effect, it is no effect.
+ *
+ * Deliberately NOT migrated: controls that sit on top of photography or video
+ * (`components/media/*`, the video half of the case file, the lightbox). Those
+ * are white because the thing behind them is an image, not because the theme
+ * is dark, and tokenising them would turn them invisible the moment the ground
+ * goes light.
+ */
+@theme {
+  --color-ground: #0a0a0c;
+  --color-surface: #101014;
+  --color-ink: #f5f5f7;
+  --color-ink-muted: #c8c8d2;
+  --color-line: #ffffff;
+  --color-scrim: #000000;
+  --color-accent: #22d3ee;
+}
 
 html {
   color-scheme: dark;
@@ -84,7 +140,7 @@ body {
   select {
     background-color: rgb(var(--bg-1));
     color: rgb(var(--fg-0));
-    border-color: rgba(255, 255, 255, 0.1);
+    border-color: rgb(var(--line) / 0.1);
   }
 
   input::placeholder,

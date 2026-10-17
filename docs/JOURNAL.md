@@ -6,6 +6,65 @@ what was measured, what is still open. Plan and phase status live in
 
 ---
 
+## 2026-10-16 (later still) — Phase 1b-i: semantic colour names, no visual change
+
+Split 1b in two on purpose. This half renames ~280 literal utilities to
+semantic ones and is provably pixel-neutral; the next half changes the values.
+Keeping them apart means the risky commit is six values rather than 280 files.
+
+**Three names, because the literals were doing three different jobs.** A blind
+`white` → `ink` replace would have been wrong: `border-white/10` is a hairline,
+`bg-white/5` is a tinted panel, and `bg-black/60` is a scrim. Scrim stays dark
+in both themes, because a scrim's job is to darken what is under it — a light
+scrim on a light page is not a softer effect, it is no effect.
+
+**What is deliberately not migrated, and why it matters.** Everything in
+`components/media/*`, the left half of the case file, the lightbox and the
+intro curtains keep literal white and black. Those controls sit on top of
+photography and video. They are white because the thing behind them is an
+image, not because the theme is dark — tokenising them would have turned every
+lightbox control invisible the moment the ground goes light. Found by reading
+the call sites rather than trusting the counts; the automated pass runs against
+an explicit file list for exactly this reason.
+
+**`@theme` rather than `@theme inline`, and this was not the first attempt.**
+The first version defined `--color-line: rgb(var(--line))` so the Tailwind
+layer would read straight from the existing channel triplets. It built
+cleanly and was completely broken: Tailwind can only apply an opacity modifier
+to a value it can parse as a colour, so `border-line/10` emitted
+`border-color: rgb(var(--line))` — a *solid white* border where a 10% hairline
+belonged — and `ring-line/20` was not generated at all. Caught by grepping the
+built stylesheet instead of trusting a clean build. With literal hex in
+`@theme`, Tailwind emits `#ffffff1a` plus a `color-mix` rule that reads
+`var(--color-line)`, which is both correct now and still overridable per scope
+later.
+
+**Tailwind 4 was compiling the documentation.** Its automatic source detection
+starts at the git root, so `docs/` was being scanned for class names. Two
+rules in the stylesheet served to every visitor came from prose: a
+`bg-surface/5` written as an *example* of the migration in `REBUILD-PLAN.md`,
+and a `ring-white/10` that is part of the quoted description of **another
+website's** design system in `REFERENCE-TEARDOWNS.md`. Fixed with
+`@import "tailwindcss" source(none)` plus an explicit `@source "./"`.
+
+**A gradient that has never rendered.** `HonorsPage.tsx:108` paints
+`to-[rgb(var(--bg-2))]`, and `--bg-2` was never defined. An undefined custom
+property makes the declaration invalid at computed-value time, so that card's
+gradient has been silently absent. Defined `--bg-2` as the real second surface
+step the system should have had.
+
+**Neutrality proven rather than asserted.** Diffed the full multiset of colour
+declarations in the built stylesheet against the previous deployed build. No
+colour present before is missing after; no new colour appears. The only
+substitution is `#ffffff` → `#f5f5f7` on tinted panels, since `ink` is the text
+colour rather than pure white — a half-step out of 255 at 5% alpha. Confirmed
+in the browser too: `border-line/10` computes to white at 0.1 alpha, and the
+dashboard screenshot is indistinguishable from the one taken before the change.
+The only elements still carrying literal `white/` on a page are the two in the
+dev-only debug panel, which is excluded by design.
+
+---
+
 ## 2026-10-16 (later) — Phase 1a: native document scroll
 
 The shell is gone. `html, body, #root { height: 100%; overflow: hidden }` and

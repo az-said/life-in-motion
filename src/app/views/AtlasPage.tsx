@@ -171,10 +171,10 @@ export default function AtlasPage() {
               placeholder="Search experiences..."
               className={clsx(
                 "w-full pl-12 pr-4 py-3 rounded-lg",
-                "glass border border-white/10",
+                "glass border border-line/10",
                 "bg-[rgb(var(--bg-0))]/50 backdrop-blur-xl",
                 "text-[rgb(var(--fg-0))] placeholder:text-[rgb(var(--fg-1))]",
-                "focus:outline-none focus:ring-2 focus:ring-white/20 focus:ring-offset-2 focus:ring-offset-transparent",
+                "focus:outline-none focus:ring-2 focus:ring-line/20 focus:ring-offset-2 focus:ring-offset-transparent",
                 "transition-all"
               )}
             />
@@ -192,8 +192,8 @@ export default function AtlasPage() {
                   "border",
                   selectedTags.has(tag)
                     ? "bg-[rgb(var(--accent))]/20 border-[rgb(var(--accent))]/40 text-[rgb(var(--fg-0))]"
-                    : "bg-white/5 border-white/10 hover:bg-white/10 text-[rgb(var(--fg-1))]",
-                  "focus:outline-none focus:ring-2 focus:ring-white/20 focus:ring-offset-2 focus:ring-offset-transparent"
+                    : "bg-ink/5 border-line/10 hover:bg-ink/10 text-[rgb(var(--fg-1))]",
+                  "focus:outline-none focus:ring-2 focus:ring-line/20 focus:ring-offset-2 focus:ring-offset-transparent"
                 )}
               >
                 {tag}
@@ -204,9 +204,9 @@ export default function AtlasPage() {
                 onClick={handleClearFilters}
                 className={clsx(
                   "flex items-center gap-2 px-4 py-2 rounded-full text-sm font-medium",
-                  "bg-white/5 hover:bg-white/10 border border-white/10",
+                  "bg-ink/5 hover:bg-ink/10 border border-line/10",
                   "text-[rgb(var(--fg-1))] transition-all",
-                  "focus:outline-none focus:ring-2 focus:ring-white/20 focus:ring-offset-2 focus:ring-offset-transparent"
+                  "focus:outline-none focus:ring-2 focus:ring-line/20 focus:ring-offset-2 focus:ring-offset-transparent"
                 )}
               >
                 <X className="w-4 h-4" />
@@ -333,8 +333,8 @@ function ExperienceListItem({
         "glass border transition-all",
         isHighlighted
           ? "border-[rgb(var(--accent))]/60 ring-2 ring-[rgb(var(--accent))]/40"
-          : "border-white/10 hover:border-white/20",
-        "focus:outline-none focus:ring-2 focus:ring-white/20 focus:ring-offset-2 focus:ring-offset-transparent"
+          : "border-line/10 hover:border-line/20",
+        "focus:outline-none focus:ring-2 focus:ring-line/20 focus:ring-offset-2 focus:ring-offset-transparent"
       )}
     >
       <div className="flex gap-4 p-4">
@@ -362,7 +362,7 @@ function ExperienceListItem({
               />
             )}
             {/* Subtle gradient overlay - lighter for better image visibility */}
-            <div className="absolute inset-0 bg-gradient-to-b from-black/10 to-black/30" />
+            <div className="absolute inset-0 bg-gradient-to-b from-scrim/10 to-scrim/30" />
           </div>
         )}
 
@@ -393,7 +393,7 @@ function ExperienceListItem({
               {experience.tags.slice(0, 3).map((tag) => (
                 <span
                   key={tag}
-                  className="px-2 py-0.5 rounded-full bg-white/5 border border-white/10 text-xs text-[rgb(var(--fg-1))]"
+                  className="px-2 py-0.5 rounded-full bg-ink/5 border border-line/10 text-xs text-[rgb(var(--fg-1))]"
                 >
                   {tag}
                 </span>

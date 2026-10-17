@@ -34,7 +34,7 @@ export default function Avatar({
   };
 
   const avatarClasses = clsx(
-    "rounded-full object-cover ring-1 ring-white/15 shadow-sm",
+    "rounded-full object-cover ring-1 ring-line/15 shadow-sm",
     "flex items-center justify-center",
     "flex-shrink-0",
     "bg-gradient-to-br from-[rgb(var(--bg-1))] to-[rgb(var(--bg-0))]",

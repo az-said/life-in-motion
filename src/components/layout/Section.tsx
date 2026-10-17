@@ -30,7 +30,7 @@ export default function Section({
       className={clsx(
         spacing !== "none" && SPACING[spacing],
         padding !== "none" && SPACING[padding],
-        variant === "glass" && "glass rounded-lg border border-white/10 backdrop-blur-xl",
+        variant === "glass" && "glass rounded-lg border border-line/10 backdrop-blur-xl",
         className
       )}
     >

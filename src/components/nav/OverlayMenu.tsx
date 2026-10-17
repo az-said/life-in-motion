@@ -231,7 +231,7 @@ export default function OverlayMenu({
           <div
             className={clsx(
               "flex flex-col glass overflow-hidden rounded-lg",
-              "border border-white/10 bg-[rgb(var(--bg-0))]/90 backdrop-blur-xl",
+              "border border-line/10 bg-[rgb(var(--bg-0))]/90 backdrop-blur-xl",
               "shadow-[0_8px_32px_rgba(0,0,0,0.4)]",
               // Sizes to its content. It only becomes a scroller once the list
               // is taller than the space left under the header.
@@ -249,9 +249,9 @@ export default function OverlayMenu({
                     aria-current={isCurrent ? "page" : undefined}
                     className={clsx(
                       "w-full rounded-md px-3 py-2.5 text-left transition-colors duration-150",
-                      "hover:bg-white/5 active:bg-white/10",
-                      "focus:outline-none focus:ring-2 focus:ring-inset focus:ring-white/20",
-                      isCurrent && "bg-white/[0.07]",
+                      "hover:bg-ink/5 active:bg-ink/10",
+                      "focus:outline-none focus:ring-2 focus:ring-inset focus:ring-line/20",
+                      isCurrent && "bg-ink/[0.07]",
                     )}
                   >
                     <div className="text-sm font-medium text-[rgb(var(--fg-0))]">

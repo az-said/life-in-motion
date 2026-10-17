@@ -121,7 +121,7 @@ export default function HonorsPage() {
                     }}
                   />
                   {/* Bottom gradient for content readability */}
-                  <div className="absolute inset-0 bg-gradient-to-b from-black/60 via-black/40 to-black/80" />
+                  <div className="absolute inset-0 bg-gradient-to-b from-scrim/60 via-scrim/40 to-scrim/80" />
                 </div>
 
                 {/* Content */}
@@ -171,7 +171,7 @@ export default function HonorsPage() {
           <Container size="4xl">
               <div className="relative">
                 {/* Timeline line */}
-                <div className="absolute left-8 top-0 bottom-0 w-0.5 bg-white/10" />
+                <div className="absolute left-8 top-0 bottom-0 w-0.5 bg-ink/10" />
 
                 {/* Timeline items */}
                 <div className="space-y-12">
@@ -195,15 +195,15 @@ export default function HonorsPage() {
                             alt={item.title}
                             className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
                           />
-                          <div className="absolute inset-0 bg-gradient-to-b from-black/40 via-black/20 to-black/60" />
+                          <div className="absolute inset-0 bg-gradient-to-b from-scrim/40 via-scrim/20 to-scrim/60" />
                         </div>
                       )}
 
                       {/* Content card */}
                       <div className={clsx(
-                        "glass rounded-lg border border-white/10 p-6 backdrop-blur-xl",
+                        "glass rounded-lg border border-line/10 p-6 backdrop-blur-xl",
                         "transition-all duration-200",
-                        "group-hover:border-white/20 group-hover:shadow-lg"
+                        "group-hover:border-line/20 group-hover:shadow-lg"
                       )}>
                         <div className="flex items-start justify-between gap-4 mb-4">
                           <div className="flex-1">
@@ -242,13 +242,13 @@ export default function HonorsPage() {
                             {item.tags.slice(0, 3).map((tag) => (
                               <span
                                 key={tag}
-                                className="px-3 py-1 rounded-full bg-white/5 border border-white/10 text-sm text-[rgb(var(--fg-1))]"
+                                className="px-3 py-1 rounded-full bg-ink/5 border border-line/10 text-sm text-[rgb(var(--fg-1))]"
                               >
                                 {tag}
                               </span>
                             ))}
                             {item.tags.length > 3 && (
-                              <span className="px-3 py-1 rounded-full bg-white/5 border border-white/10 text-sm text-[rgb(var(--fg-1))]">
+                              <span className="px-3 py-1 rounded-full bg-ink/5 border border-line/10 text-sm text-[rgb(var(--fg-1))]">
                                 +{item.tags.length - 3}
                               </span>
                             )}

@@ -85,12 +85,12 @@ export default function BooksPage() {
               onClick={handleShuffle}
               className={clsx(
                 "flex items-center gap-2 px-4 py-2 rounded-lg transition-all duration-200 ease-out",
-                "bg-white/5 hover:bg-white/10 active:bg-white/15",
-                "border border-white/10 hover:border-white/20",
+                "bg-ink/5 hover:bg-ink/10 active:bg-ink/15",
+                "border border-line/10 hover:border-line/20",
                 "text-sm font-medium text-[rgb(var(--fg-0))]",
                 "hover:-translate-y-0.5 active:translate-y-0",
                 "hover:shadow-[0_4px_12px_rgba(120,220,255,0.15)]",
-                "focus:outline-none focus:ring-2 focus:ring-white/20 focus:ring-offset-2 focus:ring-offset-transparent",
+                "focus:outline-none focus:ring-2 focus:ring-line/20 focus:ring-offset-2 focus:ring-offset-transparent",
                 "group"
               )}
             >
@@ -157,7 +157,7 @@ function BookCoverFallback({ title }: BookCoverFallbackProps) {
   const initials = getInitials(title);
   
   return (
-    <div className="relative w-full h-[72px] md:h-[88px] rounded-lg overflow-hidden bg-gradient-to-br from-[rgb(var(--bg-1))] to-[rgb(var(--bg-0))] border border-white/10 flex items-center justify-center">
+    <div className="relative w-full h-[72px] md:h-[88px] rounded-lg overflow-hidden bg-gradient-to-br from-[rgb(var(--bg-1))] to-[rgb(var(--bg-0))] border border-line/10 flex items-center justify-center">
       <span className="text-lg md:text-xl font-bold text-[rgb(var(--fg-0))] opacity-80">
         {initials}
       </span>
@@ -194,8 +194,8 @@ function BookSpine({
         "glass border transition-all",
         isSelected
           ? "border-[rgb(var(--accent))]/60 ring-2 ring-[rgb(var(--accent))]/40"
-          : "border-white/10 hover:border-white/20",
-        "focus:outline-none focus:ring-2 focus:ring-white/20 focus:ring-offset-2 focus:ring-offset-transparent"
+          : "border-line/10 hover:border-line/20",
+        "focus:outline-none focus:ring-2 focus:ring-line/20 focus:ring-offset-2 focus:ring-offset-transparent"
       )}
     >
       {/* Spine color accent */}
@@ -240,7 +240,7 @@ function BookSpine({
           {book.tags.slice(0, 2).map((tag) => (
             <span
               key={tag}
-              className="px-2 py-1 rounded-full bg-white/5 border border-white/10 text-xs text-[rgb(var(--fg-1))]"
+              className="px-2 py-1 rounded-full bg-ink/5 border border-line/10 text-xs text-[rgb(var(--fg-1))]"
             >
               {tag}
             </span>

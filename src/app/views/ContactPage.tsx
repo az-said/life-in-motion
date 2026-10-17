@@ -48,15 +48,15 @@ export default function ContactPage() {
             whileTap={{ scale: 0.98, y: 0 }}
             className={clsx(
               "group relative flex items-center justify-between gap-6",
-              "glass rounded-lg border border-white/10 p-6 md:p-8",
+              "glass rounded-lg border border-line/10 p-6 md:p-8",
               "backdrop-blur-xl transition-all duration-200 ease-out",
-              "hover:border-white/20 hover:bg-white/5",
+              "hover:border-line/20 hover:bg-ink/5",
               "hover:shadow-[0_4px_16px_rgba(120,220,255,0.15)]",
-              "focus:outline-none focus:ring-2 focus:ring-white/20 focus:ring-offset-2 focus:ring-offset-transparent"
+              "focus:outline-none focus:ring-2 focus:ring-line/20 focus:ring-offset-2 focus:ring-offset-transparent"
             )}
           >
             <div className="flex items-center gap-4 flex-1 min-w-0">
-              <div className="p-3 rounded-lg bg-white/5 border border-white/10 flex-shrink-0">
+              <div className="p-3 rounded-lg bg-ink/5 border border-line/10 flex-shrink-0">
                 <Linkedin className="w-6 h-6 text-[rgb(var(--fg-0))] group-hover:text-[rgb(var(--accent))] transition-colors" />
               </div>
               <div className="flex-1 min-w-0">
@@ -83,15 +83,15 @@ export default function ContactPage() {
             whileTap={{ scale: 0.98, y: 0 }}
             className={clsx(
               "group relative flex items-center justify-between gap-6",
-              "glass rounded-lg border border-white/10 p-6 md:p-8",
+              "glass rounded-lg border border-line/10 p-6 md:p-8",
               "backdrop-blur-xl transition-all duration-200 ease-out",
-              "hover:border-white/20 hover:bg-white/5",
+              "hover:border-line/20 hover:bg-ink/5",
               "hover:shadow-[0_4px_16px_rgba(120,220,255,0.15)]",
-              "focus:outline-none focus:ring-2 focus:ring-white/20 focus:ring-offset-2 focus:ring-offset-transparent"
+              "focus:outline-none focus:ring-2 focus:ring-line/20 focus:ring-offset-2 focus:ring-offset-transparent"
             )}
           >
             <div className="flex items-center gap-4 flex-1 min-w-0">
-              <div className="p-3 rounded-lg bg-white/5 border border-white/10 flex-shrink-0">
+              <div className="p-3 rounded-lg bg-ink/5 border border-line/10 flex-shrink-0">
                 <Github className="w-6 h-6 text-[rgb(var(--fg-0))] group-hover:text-[rgb(var(--accent))] transition-colors" />
               </div>
               <div className="flex-1 min-w-0">
@@ -116,15 +116,15 @@ export default function ContactPage() {
             whileTap={{ scale: 0.98, y: 0 }}
             className={clsx(
               "group relative flex items-center justify-between gap-6",
-              "glass rounded-lg border border-white/10 p-6 md:p-8",
+              "glass rounded-lg border border-line/10 p-6 md:p-8",
               "backdrop-blur-xl transition-all duration-200 ease-out",
-              "hover:border-white/20 hover:bg-white/5",
+              "hover:border-line/20 hover:bg-ink/5",
               "hover:shadow-[0_4px_16px_rgba(120,220,255,0.15)]",
-              "focus:outline-none focus:ring-2 focus:ring-white/20 focus:ring-offset-2 focus:ring-offset-transparent"
+              "focus:outline-none focus:ring-2 focus:ring-line/20 focus:ring-offset-2 focus:ring-offset-transparent"
             )}
           >
             <div className="flex items-center gap-4 flex-1 min-w-0">
-              <div className="p-3 rounded-lg bg-white/5 border border-white/10 flex-shrink-0">
+              <div className="p-3 rounded-lg bg-ink/5 border border-line/10 flex-shrink-0">
                 <Mail className="w-6 h-6 text-[rgb(var(--fg-0))] group-hover:text-[rgb(var(--accent))] transition-colors" />
               </div>
               <div className="flex-1 min-w-0">
@@ -145,7 +145,7 @@ export default function ContactPage() {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6, delay: 0.3 }}
-          className="glass rounded-lg border border-white/10 p-6 md:p-8 backdrop-blur-xl text-center"
+          className="glass rounded-lg border border-line/10 p-6 md:p-8 backdrop-blur-xl text-center"
         >
           <p className="text-base md:text-lg text-[rgb(var(--fg-0))] leading-relaxed">
             <span className="font-medium">Note:</span> I don't have Instagram or TikTok—and I'm proud of it.{" "}

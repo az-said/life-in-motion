@@ -186,7 +186,7 @@ export default function AtlasJourneyMap({
   return (
     <div
       ref={containerRef}
-      className="relative w-full min-h-[600px] rounded-lg overflow-hidden glass border border-white/10 p-8"
+      className="relative w-full min-h-[600px] rounded-lg overflow-hidden glass border border-line/10 p-8"
     >
       {/* SVG Path */}
       <svg
@@ -275,7 +275,7 @@ export default function AtlasJourneyMap({
                   "glass rounded-lg border backdrop-blur-xl transition-all",
                   isHighlighted
                     ? "border-[rgb(var(--accent))]/60 ring-2 ring-[rgb(var(--accent))]/40"
-                    : "border-white/10 hover:border-white/30",
+                    : "border-line/10 hover:border-line/30",
                   "p-3 min-w-[120px]"
                 )}
               >
@@ -298,7 +298,7 @@ export default function AtlasJourneyMap({
                         className="w-full h-full object-cover"
                       />
                     )}
-                    <div className="absolute inset-0 bg-gradient-to-b from-black/40 to-black/80" />
+                    <div className="absolute inset-0 bg-gradient-to-b from-scrim/40 to-scrim/80" />
                   </div>
                 )}
 

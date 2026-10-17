@@ -4,7 +4,7 @@ import Avatar from "../ui/Avatar";
 
 export default function PageFooter() {
   return (
-    <footer className="mt-auto border-t border-white/10 py-6 px-6 md:px-12 lg:px-16">
+    <footer className="mt-auto border-t border-line/10 py-6 px-6 md:px-12 lg:px-16">
       <div className="max-w-7xl mx-auto flex items-center justify-between gap-4">
         {/* Left: Copyright */}
         <span className="text-xs text-[rgb(var(--fg-1))] whitespace-nowrap">© 2026</span>
@@ -29,12 +29,12 @@ export default function PageFooter() {
               // page where a thumb is least accurate.
               "inline-flex h-11 w-11 items-center justify-center sm:h-auto sm:w-auto sm:p-2",
               "rounded-md transition-all duration-200 ease-out",
-              "hover:bg-white/5 active:bg-white/10",
-              "border border-white/10 hover:border-white/20",
+              "hover:bg-ink/5 active:bg-ink/10",
+              "border border-line/10 hover:border-line/20",
               "text-[rgb(var(--fg-1))] hover:text-[rgb(var(--fg-0))]",
               "hover:-translate-y-0.5 active:translate-y-0",
               "hover:shadow-[0_2px_8px_rgba(120,220,255,0.1)]",
-              "focus:outline-none focus:ring-2 focus:ring-white/20 focus:ring-offset-1 focus:ring-offset-transparent"
+              "focus:outline-none focus:ring-2 focus:ring-line/20 focus:ring-offset-1 focus:ring-offset-transparent"
             )}
             aria-label="GitHub"
           >
@@ -51,12 +51,12 @@ export default function PageFooter() {
               // page where a thumb is least accurate.
               "inline-flex h-11 w-11 items-center justify-center sm:h-auto sm:w-auto sm:p-2",
               "rounded-md transition-all duration-200 ease-out",
-              "hover:bg-white/5 active:bg-white/10",
-              "border border-white/10 hover:border-white/20",
+              "hover:bg-ink/5 active:bg-ink/10",
+              "border border-line/10 hover:border-line/20",
               "text-[rgb(var(--fg-1))] hover:text-[rgb(var(--fg-0))]",
               "hover:-translate-y-0.5 active:translate-y-0",
               "hover:shadow-[0_2px_8px_rgba(120,220,255,0.1)]",
-              "focus:outline-none focus:ring-2 focus:ring-white/20 focus:ring-offset-1 focus:ring-offset-transparent"
+              "focus:outline-none focus:ring-2 focus:ring-line/20 focus:ring-offset-1 focus:ring-offset-transparent"
             )}
             aria-label="LinkedIn"
           >
@@ -72,12 +72,12 @@ export default function PageFooter() {
               // page where a thumb is least accurate.
               "inline-flex h-11 w-11 items-center justify-center sm:h-auto sm:w-auto sm:p-2",
               "rounded-md transition-all duration-200 ease-out",
-              "hover:bg-white/5 active:bg-white/10",
-              "border border-white/10 hover:border-white/20",
+              "hover:bg-ink/5 active:bg-ink/10",
+              "border border-line/10 hover:border-line/20",
               "text-[rgb(var(--fg-1))] hover:text-[rgb(var(--fg-0))]",
               "hover:-translate-y-0.5 active:translate-y-0",
               "hover:shadow-[0_2px_8px_rgba(120,220,255,0.1)]",
-              "focus:outline-none focus:ring-2 focus:ring-white/20 focus:ring-offset-1 focus:ring-offset-transparent"
+              "focus:outline-none focus:ring-2 focus:ring-line/20 focus:ring-offset-1 focus:ring-offset-transparent"
             )}
             aria-label="Email"
           >

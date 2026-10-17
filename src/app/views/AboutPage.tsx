@@ -36,7 +36,7 @@ export default function AboutPage() {
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true, margin: "-100px" }}
           transition={{ duration: 0.6 }}
-          className="glass rounded-lg border border-white/10 p-8 md:p-12 lg:p-16 backdrop-blur-xl"
+          className="glass rounded-lg border border-line/10 p-8 md:p-12 lg:p-16 backdrop-blur-xl"
         >
           <h2 className="text-3xl md:text-4xl font-semibold text-[rgb(var(--fg-0))] mb-6">
             Identity
@@ -52,7 +52,7 @@ export default function AboutPage() {
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true, margin: "-100px" }}
           transition={{ duration: 0.6, delay: 0.1 }}
-          className="glass rounded-lg border border-white/10 p-8 md:p-12 lg:p-16 backdrop-blur-xl"
+          className="glass rounded-lg border border-line/10 p-8 md:p-12 lg:p-16 backdrop-blur-xl"
         >
           <h2 className="text-3xl md:text-4xl font-semibold text-[rgb(var(--fg-0))] mb-6">
             Bridge-building
@@ -61,13 +61,13 @@ export default function AboutPage() {
             The work I'm drawn to isn't about choosing sides—it's about creating spaces where different perspectives can coexist and collaborate. Whether through research that opens new pathways, ventures that connect communities, or teaching that empowers others, the thread that runs through everything is bridge-building. It's the belief that the most interesting solutions emerge when we bring together what seems separate, when we translate between worlds, and when we create systems that work for everyone.
           </p>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-8">
-            <div className="p-4 rounded-lg bg-white/5 border border-white/10">
+            <div className="p-4 rounded-lg bg-ink/5 border border-line/10">
               <h3 className="text-lg font-semibold text-[rgb(var(--fg-0))] mb-2">Research</h3>
               <p className="text-sm text-[rgb(var(--fg-1))]">
                 Opening doors through innovation and creating opportunities for others to follow.
               </p>
             </div>
-            <div className="p-4 rounded-lg bg-white/5 border border-white/10">
+            <div className="p-4 rounded-lg bg-ink/5 border border-line/10">
               <h3 className="text-lg font-semibold text-[rgb(var(--fg-0))] mb-2">Community</h3>
               <p className="text-sm text-[rgb(var(--fg-1))]">
                 Building networks of support and creating spaces where everyone can thrive.
@@ -82,7 +82,7 @@ export default function AboutPage() {
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true, margin: "-100px" }}
           transition={{ duration: 0.6, delay: 0.2 }}
-          className="glass rounded-lg border border-white/10 p-8 md:p-12 lg:p-16 backdrop-blur-xl"
+          className="glass rounded-lg border border-line/10 p-8 md:p-12 lg:p-16 backdrop-blur-xl"
         >
           <h2 className="text-3xl md:text-4xl font-semibold text-[rgb(var(--fg-0))] mb-6">
             Maker Mindset
@@ -91,19 +91,19 @@ export default function AboutPage() {
             Ideas are only as powerful as their execution. The maker mindset is about turning vision into reality—whether that's code, research, ventures, or movements. It's the discipline of craft, the patience to iterate, and the courage to build even when the path isn't clear. This isn't just about creating things; it's about creating things that matter, that solve real problems, and that leave the world better than we found it.
           </p>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mt-8">
-            <div className="p-4 rounded-lg bg-white/5 border border-white/10">
+            <div className="p-4 rounded-lg bg-ink/5 border border-line/10">
               <h3 className="text-lg font-semibold text-[rgb(var(--fg-0))] mb-2">Craft</h3>
               <p className="text-sm text-[rgb(var(--fg-1))]">
                 Excellence through iteration, attention to detail, and continuous learning.
               </p>
             </div>
-            <div className="p-4 rounded-lg bg-white/5 border border-white/10">
+            <div className="p-4 rounded-lg bg-ink/5 border border-line/10">
               <h3 className="text-lg font-semibold text-[rgb(var(--fg-0))] mb-2">Movement</h3>
               <p className="text-sm text-[rgb(var(--fg-1))]">
                 Finding clarity and purpose through physical expression and motion.
               </p>
             </div>
-            <div className="p-4 rounded-lg bg-white/5 border border-white/10">
+            <div className="p-4 rounded-lg bg-ink/5 border border-line/10">
               <h3 className="text-lg font-semibold text-[rgb(var(--fg-0))] mb-2">Entrepreneurship</h3>
               <p className="text-sm text-[rgb(var(--fg-1))]">
                 Building solutions that create value and drive meaningful impact.
@@ -118,7 +118,7 @@ export default function AboutPage() {
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true, margin: "-100px" }}
           transition={{ duration: 0.6, delay: 0.3 }}
-          className="glass rounded-lg border border-white/10 p-8 md:p-12 lg:p-16 backdrop-blur-xl"
+          className="glass rounded-lg border border-line/10 p-8 md:p-12 lg:p-16 backdrop-blur-xl"
         >
           <h2 className="text-3xl md:text-4xl font-semibold text-[rgb(var(--fg-0))] mb-6">
             Values
@@ -134,7 +134,7 @@ export default function AboutPage() {
                 whileHover={{ scale: 1.05 }}
                 className={clsx(
                   "px-4 py-2 md:px-6 md:py-3 rounded-full",
-                  "bg-white/5 hover:bg-white/10 border border-white/10 hover:border-white/20",
+                  "bg-ink/5 hover:bg-ink/10 border border-line/10 hover:border-line/20",
                   "text-base md:text-lg font-medium text-[rgb(var(--fg-0))]",
                   "transition-all cursor-default"
                 )}

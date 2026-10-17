@@ -34,7 +34,7 @@ export default function OrgBadges({ orgIds, className }: OrgBadgesProps) {
             "inline-flex items-center justify-center",
             "h-5 md:h-[22px] w-auto", // Consistent height: 20px mobile, 22px desktop
             "opacity-70 hover:opacity-100 transition-opacity duration-200",
-            "bg-white/5 px-2 py-1 rounded backdrop-blur-sm", // Subtle background for visibility in dark mode
+            "bg-ink/5 px-2 py-1 rounded backdrop-blur-sm", // Subtle background for visibility in dark mode
             className
           )}
         >
@@ -46,7 +46,7 @@ export default function OrgBadges({ orgIds, className }: OrgBadgesProps) {
               loading="lazy"
             />
           ) : (
-            <span className="text-[10px] md:text-[11px] font-medium tracking-wide text-white/80 whitespace-nowrap">
+            <span className="text-[10px] md:text-[11px] font-medium tracking-wide text-ink/80 whitespace-nowrap">
               {org.wordmark ?? org.name}
             </span>
           )}

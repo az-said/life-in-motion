@@ -35,13 +35,13 @@ export default function SoundToggle({ className, size = "md" }: SoundToggleProps
       className={clsx(
         padding,
         "rounded-md transition-all duration-200 ease-out",
-        "bg-white/5 hover:bg-white/10 active:bg-white/15",
-        "border border-white/10 hover:border-white/20",
+        "bg-ink/5 hover:bg-ink/10 active:bg-ink/15",
+        "border border-line/10 hover:border-line/20",
         "text-[rgb(var(--fg-1))] hover:text-[rgb(var(--fg-0))]",
         "hover:-translate-y-0.5 active:translate-y-0",
         "hover:shadow-[0_2px_8px_rgba(120,220,255,0.1)]",
         // Visible focus ring for accessibility (high contrast)
-        "focus:outline-none focus:ring-2 focus:ring-white/40 focus:ring-offset-2 focus:ring-offset-black",
+        "focus:outline-none focus:ring-2 focus:ring-line/40 focus:ring-offset-2 focus:ring-offset-black",
         className
       )}
       aria-label={isEnabled ? "Disable sound effects" : "Enable sound effects"}

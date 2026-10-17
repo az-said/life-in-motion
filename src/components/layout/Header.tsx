@@ -167,7 +167,7 @@ export default function Header() {
         // tap targets, which would otherwise push the bar to ~77px and eat the
         // top of every page. Height is measured and published as --header-h
         // below, so the page offset follows automatically either way.
-        className="fixed top-0 left-0 right-0 z-30 flex items-center justify-between px-4 py-2 sm:px-6 sm:py-4 border-b border-white/10"
+        className="fixed top-0 left-0 right-0 z-30 flex items-center justify-between px-4 py-2 sm:px-6 sm:py-4 border-b border-line/10"
         data-header
         initial={false}
         animate={{
@@ -196,7 +196,7 @@ export default function Header() {
               className={clsx(
                 "text-xs tracking-wide uppercase transition-colors",
                 "px-3 py-1 rounded-md",
-                "bg-white/10 text-[rgb(var(--fg-0))] font-medium"
+                "bg-ink/10 text-[rgb(var(--fg-0))] font-medium"
               )}
             >
               {sectionLabel}
@@ -225,11 +225,11 @@ export default function Header() {
                 // hardest place on a phone to hit accurately.
                 "inline-flex h-11 w-11 items-center justify-center sm:h-auto sm:w-auto sm:p-2",
                 "rounded-md transition-all duration-200 ease-out",
-                "hover:bg-white/5 active:bg-white/10",
-                "border border-white/10 hover:border-white/20",
+                "hover:bg-ink/5 active:bg-ink/10",
+                "border border-line/10 hover:border-line/20",
                 "hover:-translate-y-0.5 active:translate-y-0",
                 "hover:shadow-[0_4px_12px_rgba(120,220,255,0.15)]",
-                "focus:outline-none focus:ring-2 focus:ring-white/20 focus:ring-offset-2 focus:ring-offset-transparent"
+                "focus:outline-none focus:ring-2 focus:ring-line/20 focus:ring-offset-2 focus:ring-offset-transparent"
               )}
               aria-label="Menu"
               aria-expanded={isMenuOpen}

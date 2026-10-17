@@ -54,7 +54,7 @@ ${errorInfo ? `Component Stack: ${errorInfo.componentStack}` : ""}
 
       {/* Content */}
       <div className="relative z-10 max-w-md mx-auto px-6 py-12 text-center">
-        <div className="glass rounded-lg border border-white/10 p-8 md:p-12 backdrop-blur-xl">
+        <div className="glass rounded-lg border border-line/10 p-8 md:p-12 backdrop-blur-xl">
           {/* Title */}
           <h1 className="text-3xl md:text-4xl font-bold text-[rgb(var(--fg-0))] mb-4 tracking-tight">
             Something went off-script.
@@ -68,7 +68,7 @@ ${errorInfo ? `Component Stack: ${errorInfo.componentStack}` : ""}
           {/* Error details (dev only) */}
           {isDev && error && (
             <div className="mb-8 text-left">
-              <details className="bg-black/20 rounded-lg border border-white/5 p-4 text-xs font-mono text-[rgb(var(--fg-1))]">
+              <details className="bg-scrim/20 rounded-lg border border-line/5 p-4 text-xs font-mono text-[rgb(var(--fg-1))]">
                 <summary className="cursor-pointer text-[rgb(var(--fg-0))] mb-2 hover:text-[rgb(var(--accent))] transition-colors">
                   Error Details (Dev Only)
                 </summary>
@@ -100,11 +100,11 @@ ${errorInfo ? `Component Stack: ${errorInfo.componentStack}` : ""}
               onClick={() => navigate("/")}
               className={clsx(
                 "flex items-center justify-center gap-2 px-6 py-3 rounded-lg transition-all duration-200",
-                "bg-white/5 hover:bg-white/10 active:bg-white/15",
-                "border border-white/10 hover:border-white/20",
+                "bg-ink/5 hover:bg-ink/10 active:bg-ink/15",
+                "border border-line/10 hover:border-line/20",
                 "text-base font-medium text-[rgb(var(--fg-0))]",
                 "hover:-translate-y-0.5 active:translate-y-0",
-                "focus:outline-none focus:ring-2 focus:ring-white/20 focus:ring-offset-2 focus:ring-offset-transparent",
+                "focus:outline-none focus:ring-2 focus:ring-line/20 focus:ring-offset-2 focus:ring-offset-transparent",
                 "w-full sm:w-auto"
               )}
             >
@@ -132,9 +132,9 @@ ${errorInfo ? `Component Stack: ${errorInfo.componentStack}` : ""}
                 onClick={handleCopyError}
                 className={clsx(
                   "flex items-center justify-center gap-2 px-4 py-2 rounded-lg transition-all duration-200",
-                  "bg-white/5 hover:bg-white/10 border border-white/10 hover:border-white/20",
+                  "bg-ink/5 hover:bg-ink/10 border border-line/10 hover:border-line/20",
                   "text-sm font-medium text-[rgb(var(--fg-1))]",
-                  "focus:outline-none focus:ring-2 focus:ring-white/20 focus:ring-offset-2 focus:ring-offset-transparent",
+                  "focus:outline-none focus:ring-2 focus:ring-line/20 focus:ring-offset-2 focus:ring-offset-transparent",
                   "w-full sm:w-auto"
                 )}
               >

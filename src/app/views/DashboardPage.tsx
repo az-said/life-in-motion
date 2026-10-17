@@ -46,7 +46,7 @@ import {
 function ProjectCard({ project }: { project: Project }) {
   return (
     <article
-      className="scroll-rise group relative flex flex-col rounded-xl border border-white/10 bg-white/[0.03] p-5 transition-colors duration-200 hover:border-white/20 hover:bg-white/[0.05] sm:p-6"
+      className="scroll-rise group relative flex flex-col rounded-xl border border-line/10 bg-ink/[0.03] p-5 transition-colors duration-200 hover:border-line/20 hover:bg-ink/[0.05] sm:p-6"
     >
       <header className="mb-3">
         <div className="flex flex-wrap items-baseline gap-x-3 gap-y-1">
@@ -92,7 +92,7 @@ function ProjectCard({ project }: { project: Project }) {
             href={link.href}
             target="_blank"
             rel="noopener noreferrer"
-            className="inline-flex min-h-11 items-center gap-1 rounded-lg border border-white/15 bg-white/[0.04] px-3 text-[13px] font-medium text-[rgb(var(--fg-0))] underline-offset-4 transition-colors hover:text-[rgb(var(--accent))] focus:outline-none focus-visible:ring-2 focus-visible:ring-white/30 sm:min-h-0 sm:rounded-sm sm:border-0 sm:bg-transparent sm:px-0 sm:hover:underline"
+            className="inline-flex min-h-11 items-center gap-1 rounded-lg border border-line/15 bg-ink/[0.04] px-3 text-[13px] font-medium text-[rgb(var(--fg-0))] underline-offset-4 transition-colors hover:text-[rgb(var(--accent))] focus:outline-none focus-visible:ring-2 focus-visible:ring-line/30 sm:min-h-0 sm:rounded-sm sm:border-0 sm:bg-transparent sm:px-0 sm:hover:underline"
           >
             {link.label}
             <ArrowUpRight className="h-3.5 w-3.5" aria-hidden="true" />
@@ -101,7 +101,7 @@ function ProjectCard({ project }: { project: Project }) {
         {project.more && (
           <Link
             to={project.more}
-            className="inline-flex min-h-11 items-center rounded-lg border border-white/10 px-3 text-[13px] text-[rgb(var(--fg-1))]/70 underline-offset-4 transition-colors hover:text-[rgb(var(--fg-0))] focus:outline-none focus-visible:ring-2 focus-visible:ring-white/30 sm:min-h-0 sm:rounded-sm sm:border-0 sm:px-0 sm:hover:underline"
+            className="inline-flex min-h-11 items-center rounded-lg border border-line/10 px-3 text-[13px] text-[rgb(var(--fg-1))]/70 underline-offset-4 transition-colors hover:text-[rgb(var(--fg-0))] focus:outline-none focus-visible:ring-2 focus-visible:ring-line/30 sm:min-h-0 sm:rounded-sm sm:border-0 sm:px-0 sm:hover:underline"
           >
             Case file
           </Link>
@@ -128,7 +128,7 @@ export default function DashboardPage() {
 
         {/* ---------- Stats ---------- */}
         <dl
-          className="scroll-rise mt-12 grid grid-cols-2 gap-x-4 gap-y-6 border-y border-white/10 py-6 sm:grid-cols-4 sm:gap-x-6"
+          className="scroll-rise mt-12 grid grid-cols-2 gap-x-4 gap-y-6 border-y border-line/10 py-6 sm:grid-cols-4 sm:gap-x-6"
         >
           {STATS.map((stat) => (
             <div key={stat.label}>
@@ -176,7 +176,7 @@ export default function DashboardPage() {
             {AFFILIATIONS.map((item) => (
               <li
                 key={item}
-                className="rounded-full border border-white/10 bg-white/[0.03] px-3 py-1.5 text-xs text-[rgb(var(--fg-1))]"
+                className="rounded-full border border-line/10 bg-ink/[0.03] px-3 py-1.5 text-xs text-[rgb(var(--fg-1))]"
               >
                 {item}
               </li>
@@ -200,7 +200,7 @@ export default function DashboardPage() {
               <Link
                 key={entry.to}
                 to={entry.to}
-                className="group flex min-h-14 items-center justify-between gap-3 rounded-lg border border-white/10 px-4 py-3 transition-colors hover:border-white/25 hover:bg-white/5 focus:outline-none focus-visible:ring-2 focus-visible:ring-white/30 sm:min-h-0"
+                className="group flex min-h-14 items-center justify-between gap-3 rounded-lg border border-line/10 px-4 py-3 transition-colors hover:border-line/25 hover:bg-ink/5 focus:outline-none focus-visible:ring-2 focus-visible:ring-line/30 sm:min-h-0"
               >
                 <span>
                   <span className="block text-sm font-medium text-[rgb(var(--fg-0))]">

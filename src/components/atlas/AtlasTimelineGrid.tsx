@@ -83,7 +83,7 @@ export default function AtlasTimelineGrid({
             <h2 className="text-3xl md:text-4xl font-bold text-[rgb(var(--fg-0))]">
               {year}
             </h2>
-            <div className="flex-1 h-px bg-white/10" />
+            <div className="flex-1 h-px bg-ink/10" />
             <span className="text-sm text-[rgb(var(--fg-1))] font-medium">
               {yearExperiences.length} {yearExperiences.length === 1 ? "experience" : "experiences"}
             </span>
@@ -120,7 +120,7 @@ export default function AtlasTimelineGrid({
                     "focus:outline-none focus:ring-2 focus:ring-[rgb(var(--accent))]/40 focus:ring-offset-2 focus:ring-offset-transparent",
                     isHighlighted
                       ? "border-[rgb(var(--accent))]/60 ring-2 ring-[rgb(var(--accent))]/40"
-                      : "border-white/10 hover:border-white/30"
+                      : "border-line/10 hover:border-line/30"
                   )}
                 >
                   <div className="flex gap-4 p-5">
@@ -148,7 +148,7 @@ export default function AtlasTimelineGrid({
                           />
                         )}
                         {/* Subtle gradient overlay - lighter for better image visibility */}
-                        <div className="absolute inset-0 bg-gradient-to-b from-black/10 to-black/30" />
+                        <div className="absolute inset-0 bg-gradient-to-b from-scrim/10 to-scrim/30" />
                       </div>
                     )}
 
@@ -182,7 +182,7 @@ export default function AtlasTimelineGrid({
                           {experience.tags.slice(0, 3).map((tag) => (
                             <span
                               key={tag}
-                              className="px-2 py-0.5 rounded-full bg-white/5 border border-white/10 text-xs text-[rgb(var(--fg-1))]"
+                              className="px-2 py-0.5 rounded-full bg-ink/5 border border-line/10 text-xs text-[rgb(var(--fg-1))]"
                             >
                               {tag}
                             </span>

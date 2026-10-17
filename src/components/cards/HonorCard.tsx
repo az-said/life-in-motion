@@ -35,9 +35,9 @@ export default function HonorCard({ honor, onClick, index }: HonorCardProps) {
       onClick={onClick}
       className={clsx(
         "group relative w-full h-full rounded-lg overflow-hidden cursor-pointer",
-        "glass border border-white/10",
-        "hover:border-white/30 hover:shadow-[0_8px_24px_rgba(120,220,255,0.2)]",
-        "focus:outline-none focus:ring-2 focus:ring-white/20 focus:ring-offset-2 focus:ring-offset-transparent",
+        "glass border border-line/10",
+        "hover:border-line/30 hover:shadow-[0_8px_24px_rgba(120,220,255,0.2)]",
+        "focus:outline-none focus:ring-2 focus:ring-line/20 focus:ring-offset-2 focus:ring-offset-transparent",
         "transition-all duration-300 ease-out"
       )}
       style={{
@@ -90,12 +90,12 @@ export default function HonorCard({ honor, onClick, index }: HonorCardProps) {
           ) : null}
           
           {/* Gradient overlay */}
-          <div className="absolute inset-0 bg-gradient-to-b from-black/60 via-black/40 to-black/80" />
+          <div className="absolute inset-0 bg-gradient-to-b from-scrim/60 via-scrim/40 to-scrim/80" />
         </div>
 
         {/* Highlight sweep effect */}
         <motion.div
-          className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent"
+          className="absolute inset-0 bg-gradient-to-r from-transparent via-ink/10 to-transparent"
           initial={{ x: "-100%" }}
           whileHover={{ x: "100%" }}
           transition={{ duration: 0.6, ease: "easeInOut" }}
@@ -120,7 +120,7 @@ export default function HonorCard({ honor, onClick, index }: HonorCardProps) {
               {honor.tags.slice(0, 3).map((tag: string) => (
                 <span
                   key={tag}
-                  className="px-2 py-1 rounded-full bg-white/10 border border-white/20 text-xs text-[rgb(var(--fg-1))]"
+                  className="px-2 py-1 rounded-full bg-ink/10 border border-line/20 text-xs text-[rgb(var(--fg-1))]"
                 >
                   {tag}
                 </span>

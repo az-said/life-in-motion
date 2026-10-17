@@ -159,7 +159,7 @@ function VentureSection({
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
                 transition={{ duration: 0.8, delay: 0.2 }}
-                className="glass rounded-lg border border-white/10 p-8 md:p-12 lg:p-16 backdrop-blur-xl"
+                className="glass rounded-lg border border-line/10 p-8 md:p-12 lg:p-16 backdrop-blur-xl"
               >
               <h2 className="text-4xl sm:text-5xl lg:text-6xl font-bold text-[rgb(var(--fg-0))] mb-4">
                 {venture.card.headline}
@@ -212,7 +212,7 @@ function VentureSection({
               whileInView={{ opacity: 1, x: 0 }}
               viewport={{ once: true }}
               transition={{ duration: 0.6, delay: 0.1 }}
-              className="glass rounded-lg border border-white/10 p-6 md:p-8 backdrop-blur-xl"
+              className="glass rounded-lg border border-line/10 p-6 md:p-8 backdrop-blur-xl"
             >
               <h3 className="text-2xl sm:text-3xl font-semibold text-[rgb(var(--fg-0))] mb-4">
                 Context
@@ -229,7 +229,7 @@ function VentureSection({
                 whileInView={{ opacity: 1, x: 0 }}
                 viewport={{ once: true }}
                 transition={{ duration: 0.6, delay: 0.2 }}
-                className="glass rounded-lg border border-white/10 p-6 md:p-8 backdrop-blur-xl"
+                className="glass rounded-lg border border-line/10 p-6 md:p-8 backdrop-blur-xl"
               >
                 <h3 className="text-2xl sm:text-3xl font-semibold text-[rgb(var(--fg-0))] mb-4">
                   What I Did
@@ -260,7 +260,7 @@ function VentureSection({
                 whileInView={{ opacity: 1, x: 0 }}
                 viewport={{ once: true }}
                 transition={{ duration: 0.6, delay: 0.3 }}
-                className="glass rounded-lg border border-white/10 p-6 md:p-8 backdrop-blur-xl"
+                className="glass rounded-lg border border-line/10 p-6 md:p-8 backdrop-blur-xl"
               >
                 <h3 className="text-2xl sm:text-3xl font-semibold text-[rgb(var(--fg-0))] mb-4">
                   Impact
@@ -288,7 +288,7 @@ function VentureSection({
                 whileInView={{ opacity: 1, x: 0 }}
                 viewport={{ once: true }}
                 transition={{ duration: 0.6, delay: 0.4 }}
-                className="glass rounded-lg border border-white/10 p-6 md:p-8 backdrop-blur-xl"
+                className="glass rounded-lg border border-line/10 p-6 md:p-8 backdrop-blur-xl"
               >
                 <ProofLinksStrip links={venture.caseFile.evidence} />
               </motion.div>
@@ -308,7 +308,7 @@ function VentureSection({
             {venture.tags.map((tag) => (
               <span
                 key={tag}
-                className="px-3 py-1 rounded-full bg-white/5 border border-white/10 text-sm text-[rgb(var(--fg-1))]"
+                className="px-3 py-1 rounded-full bg-ink/5 border border-line/10 text-sm text-[rgb(var(--fg-1))]"
               >
                 {tag}
               </span>
@@ -338,7 +338,7 @@ function SmallVentureCard({
       initial={prefersReducedMotion ? false : { opacity: 0, y: 20 }}
       animate={prefersReducedMotion ? {} : { opacity: 1, y: 0 }}
       transition={prefersReducedMotion ? {} : { duration: 0.6, delay: index * 0.1 }}
-      className="glass rounded-lg border border-white/10 p-6 backdrop-blur-xl cursor-pointer group hover:border-white/20 transition-all"
+      className="glass rounded-lg border border-line/10 p-6 backdrop-blur-xl cursor-pointer group hover:border-line/20 transition-all"
       onClick={() => onOpenCaseFile(venture)}
     >
       {venture.media.heroImage && (
@@ -349,7 +349,7 @@ function SmallVentureCard({
             className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300"
           />
           {/* Subtle gradient overlay - lighter for better image visibility */}
-          <div className="absolute inset-0 bg-gradient-to-b from-black/10 to-black/30" />
+          <div className="absolute inset-0 bg-gradient-to-b from-scrim/10 to-scrim/30" />
         </div>
       )}
               <h3 className="text-xl sm:text-2xl font-bold text-[rgb(var(--fg-0))] mb-2 group-hover:text-[rgb(var(--accent))] transition-colors">

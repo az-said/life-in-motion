@@ -244,7 +244,7 @@ export default function DashboardHero() {
               `--cred-scale` multiplies it so equal weight, not equal height, is
               what the eye gets. The second row just sets a smaller cap and a
               dimmer rest colour; nothing else about it differs. */}
-          <div className="reveal reveal-3 mt-7 border-t border-white/10 pt-5">
+          <div className="reveal reveal-3 mt-7 border-t border-line/10 pt-5">
             <p className="text-[10px] font-semibold uppercase tracking-[0.2em] text-[rgb(var(--fg-1))]/45">
               Selected by
             </p>
@@ -279,7 +279,7 @@ export default function DashboardHero() {
           <div className="reveal reveal-4 mt-7 flex flex-col gap-2.5 sm:flex-row sm:flex-wrap sm:items-center sm:gap-3">
             <a
               href={PROFILE.cvPath}
-              className="inline-flex min-h-12 w-full items-center justify-center gap-2 rounded-lg bg-[rgb(var(--fg-0))] px-4 text-sm font-semibold text-[rgb(var(--bg-0))] transition-transform duration-150 hover:-translate-y-0.5 active:translate-y-0 focus:outline-none focus-visible:ring-2 focus-visible:ring-white/50 sm:min-h-0 sm:w-auto sm:justify-start sm:py-2.5"
+              className="inline-flex min-h-12 w-full items-center justify-center gap-2 rounded-lg bg-[rgb(var(--fg-0))] px-4 text-sm font-semibold text-[rgb(var(--bg-0))] transition-transform duration-150 hover:-translate-y-0.5 active:translate-y-0 focus:outline-none focus-visible:ring-2 focus-visible:ring-line/50 sm:min-h-0 sm:w-auto sm:justify-start sm:py-2.5"
             >
               <Download className="h-4 w-4" aria-hidden="true" />
               Download CV
@@ -290,7 +290,7 @@ export default function DashboardHero() {
                 being crushed into half a line. */}
             <a
               href={`mailto:${PROFILE.email}`}
-              className="inline-flex min-h-11 w-full items-center justify-center gap-2 rounded-lg border border-white/15 px-4 text-sm font-medium text-[rgb(var(--fg-0))] transition-colors hover:border-white/30 hover:bg-white/5 focus:outline-none focus-visible:ring-2 focus-visible:ring-white/30 sm:min-h-0 sm:w-auto sm:justify-start sm:py-2.5"
+              className="inline-flex min-h-11 w-full items-center justify-center gap-2 rounded-lg border border-line/15 px-4 text-sm font-medium text-[rgb(var(--fg-0))] transition-colors hover:border-line/30 hover:bg-ink/5 focus:outline-none focus-visible:ring-2 focus-visible:ring-line/30 sm:min-h-0 sm:w-auto sm:justify-start sm:py-2.5"
             >
               <Mail className="h-4 w-4" aria-hidden="true" />
               {PROFILE.email}
@@ -299,7 +299,7 @@ export default function DashboardHero() {
             <div className="flex gap-2.5 sm:contents">
               <a
                 href={`tel:${PROFILE.phoneHref}`}
-                className="inline-flex min-h-11 flex-1 items-center justify-center gap-2 rounded-lg border border-white/15 px-4 text-sm font-medium text-[rgb(var(--fg-0))] transition-colors hover:border-white/30 hover:bg-white/5 focus:outline-none focus-visible:ring-2 focus-visible:ring-white/30 sm:min-h-0 sm:flex-none sm:py-2.5"
+                className="inline-flex min-h-11 flex-1 items-center justify-center gap-2 rounded-lg border border-line/15 px-4 text-sm font-medium text-[rgb(var(--fg-0))] transition-colors hover:border-line/30 hover:bg-ink/5 focus:outline-none focus-visible:ring-2 focus-visible:ring-line/30 sm:min-h-0 sm:flex-none sm:py-2.5"
               >
                 <Phone className="h-4 w-4" aria-hidden="true" />
                 <span>{PROFILE.phone}</span>
@@ -310,7 +310,7 @@ export default function DashboardHero() {
                 target="_blank"
                 rel="noopener noreferrer"
                 aria-label="LinkedIn"
-                className="inline-flex h-11 w-11 flex-none items-center justify-center rounded-lg border border-white/15 text-[rgb(var(--fg-0))] transition-colors hover:border-white/30 hover:bg-white/5 focus:outline-none focus-visible:ring-2 focus-visible:ring-white/30 sm:h-auto sm:w-auto sm:p-2.5"
+                className="inline-flex h-11 w-11 flex-none items-center justify-center rounded-lg border border-line/15 text-[rgb(var(--fg-0))] transition-colors hover:border-line/30 hover:bg-ink/5 focus:outline-none focus-visible:ring-2 focus-visible:ring-line/30 sm:h-auto sm:w-auto sm:p-2.5"
               >
                 <Linkedin className="h-4 w-4" aria-hidden="true" />
               </a>
@@ -320,7 +320,7 @@ export default function DashboardHero() {
                 target="_blank"
                 rel="noopener noreferrer"
                 aria-label="GitHub"
-                className="inline-flex h-11 w-11 flex-none items-center justify-center rounded-lg border border-white/15 text-[rgb(var(--fg-0))] transition-colors hover:border-white/30 hover:bg-white/5 focus:outline-none focus-visible:ring-2 focus-visible:ring-white/30 sm:h-auto sm:w-auto sm:p-2.5"
+                className="inline-flex h-11 w-11 flex-none items-center justify-center rounded-lg border border-line/15 text-[rgb(var(--fg-0))] transition-colors hover:border-line/30 hover:bg-ink/5 focus:outline-none focus-visible:ring-2 focus-visible:ring-line/30 sm:h-auto sm:w-auto sm:p-2.5"
               >
                 <Github className="h-4 w-4" aria-hidden="true" />
               </a>

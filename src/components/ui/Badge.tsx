@@ -21,7 +21,7 @@ export default function Badge({ badge, className }: BadgeProps) {
           "inline-flex items-center justify-center",
           "h-5 md:h-[22px] w-auto", // Consistent height: 20px mobile, 22px desktop
           "opacity-70 hover:opacity-100 transition-opacity duration-200",
-          "bg-white/5 px-2 py-1 rounded backdrop-blur-sm", // Subtle background for visibility in dark mode
+          "bg-ink/5 px-2 py-1 rounded backdrop-blur-sm", // Subtle background for visibility in dark mode
           className
         )}
       >
@@ -42,7 +42,7 @@ export default function Badge({ badge, className }: BadgeProps) {
           "inline-flex items-center justify-center",
           "px-2 py-0.5 h-5 md:h-[22px]",
           "text-xs font-medium text-[rgb(var(--fg-1))]",
-          "bg-white/5 border border-white/10 rounded",
+          "bg-ink/5 border border-line/10 rounded",
           "opacity-60 hover:opacity-90 transition-opacity duration-200",
           className
         )}
