@@ -3,47 +3,40 @@ import { useLocation } from "react-router-dom";
 import { scrollLockManager } from "../../utils/scrollLockManager";
 
 /**
- * Temporary debug helper (dev only)
- * Shows current route, modal state, and scroll container lock status
+ * Dev-only readout: route, modal detection, and scroll-lock state.
+ *
+ * Reads `<html>` now. It used to read `[data-scroll-container]` and report
+ * "not found" once the document took over scrolling — which would have made
+ * this panel lie about the exact thing it exists to watch.
  */
 export default function DebugHelper() {
   const location = useLocation();
   const [scrollState, setScrollState] = useState({
+    htmlOverflow: "",
     bodyOverflow: "",
-    containerOverflow: "",
-    scrollTop: 0,
+    scrollY: 0,
     scrollHeight: 0,
     clientHeight: 0,
-    containerElement: "",
+    lockCount: 0,
     isLocked: false,
   });
   const [isModalOpen, setIsModalOpen] = useState(false);
 
   useEffect(() => {
     const checkState = () => {
-      // Check scroll container (the actual scrolling element)
-      const scrollContainer = document.querySelector('[data-scroll-container]') as HTMLElement | null;
-      const containerOverflow = scrollContainer?.style.overflow || window.getComputedStyle(scrollContainer || document.body).overflow || "";
-      const bodyOverflow = document.body.style.overflow || window.getComputedStyle(document.body).overflow || "";
-      const scrollTop = scrollContainer?.scrollTop ?? 0;
-      const scrollHeight = scrollContainer?.scrollHeight ?? 0;
-      const clientHeight = scrollContainer?.clientHeight ?? 0;
-      
-      // Get container element info
-      const containerElement = scrollContainer 
-        ? `${scrollContainer.tagName.toLowerCase()}${scrollContainer.className ? '.' + scrollContainer.className.split(' ').join('.') : ''}`
-        : "not found";
-      
-      // Get lock state from manager
+      const html = document.documentElement;
       const lockState = scrollLockManager.getState();
-      
+
       setScrollState({
-        bodyOverflow,
-        containerOverflow,
-        scrollTop: Math.round(scrollTop),
-        scrollHeight: Math.round(scrollHeight),
-        clientHeight: Math.round(clientHeight),
-        containerElement,
+        // Inline first: that is what the lock manager writes, and seeing it
+        // empty while the count is non-zero is the signature of a leak.
+        htmlOverflow: html.style.overflow || window.getComputedStyle(html).overflow || "",
+        bodyOverflow:
+          document.body.style.overflow || window.getComputedStyle(document.body).overflow || "",
+        scrollY: Math.round(window.scrollY),
+        scrollHeight: Math.round(html.scrollHeight),
+        clientHeight: Math.round(html.clientHeight),
+        lockCount: lockState.lockCount,
         isLocked: lockState.isLocked,
       });
 
@@ -113,17 +106,16 @@ export default function DebugHelper() {
       <div className="font-semibold mb-1 text-white/90">Debug</div>
       <div>Route: {location.pathname}</div>
       <div>Modal: {isModalOpen ? "✅ OPEN" : "❌ CLOSED"}</div>
-      <div>Lock: {scrollState.isLocked ? "🔒" : "🔓"} {scrollState.isLocked ? "LOCKED" : "UNLOCKED"}</div>
-      <div className="mt-1 pt-1 border-t border-white/10">
-        <div className="font-semibold text-white/90">Scroll Container</div>
-        <div className="truncate" title={scrollState.containerElement}>Element: {scrollState.containerElement}</div>
-        <div>ScrollTop: {scrollState.scrollTop}px</div>
-        <div>ScrollHeight: {scrollState.scrollHeight}px</div>
-        <div>ClientHeight: {scrollState.clientHeight}px</div>
-        <div>Overflow: {scrollState.containerOverflow || "auto"}</div>
+      <div>
+        Lock: {scrollState.isLocked ? "🔒 LOCKED" : "🔓 UNLOCKED"} ({scrollState.lockCount})
       </div>
       <div className="mt-1 pt-1 border-t border-white/10">
-        <div>Body: {scrollState.bodyOverflow || "default"}</div>
+        <div className="font-semibold text-white/90">Document</div>
+        <div>ScrollY: {scrollState.scrollY}px</div>
+        <div>ScrollHeight: {scrollState.scrollHeight}px</div>
+        <div>ClientHeight: {scrollState.clientHeight}px</div>
+        <div>html overflow: {scrollState.htmlOverflow || "default"}</div>
+        <div>body overflow: {scrollState.bodyOverflow || "default"}</div>
       </div>
     </div>
   );

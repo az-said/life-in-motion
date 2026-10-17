@@ -163,19 +163,23 @@ export default function CaseFileModal({
   useEffect(() => {
     if (!isOpen || showRoofMateIntro) return;
 
-    const scrollContainer = document.querySelector('[data-scroll-container]');
+    // `[data-app-content]` is the page wrapper in AppLayout. It was
+    // `[data-scroll-container]` until the document took over scrolling; the
+    // element a dialog needs to hide is not necessarily the one that scrolls,
+    // so the shell now publishes a name for this specifically.
+    const appContent = document.querySelector('[data-app-content]');
     const header = document.querySelector('header, [data-header]');
-    
-    if (scrollContainer) {
-      scrollContainer.setAttribute('aria-hidden', 'true');
+
+    if (appContent) {
+      appContent.setAttribute('aria-hidden', 'true');
     }
     if (header) {
       header.setAttribute('aria-hidden', 'true');
     }
 
     return () => {
-      if (scrollContainer) {
-        scrollContainer.removeAttribute('aria-hidden');
+      if (appContent) {
+        appContent.removeAttribute('aria-hidden');
       }
       if (header) {
         header.removeAttribute('aria-hidden');

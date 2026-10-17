@@ -1,186 +1,98 @@
 /**
- * Centralized scroll lock manager with ref-counting
- * Ensures multiple modals/overlays can lock scroll without conflicts
+ * Document scroll lock, ref-counted so overlapping modals cannot unlock each
+ * other's lock.
+ *
+ * The document is what scrolls (see the note in index.css), so this clamps
+ * `<html>`. It used to clamp an inner `[data-scroll-container]`, which meant
+ * finding that element first, caching it, and re-checking that the cached node
+ * was still in the DOM on every call.
+ *
+ * Two things that used to live here are gone rather than ported:
+ *
+ *   - **Scrollbar-width compensation.** Roughly thirty lines built two
+ *     throwaway divs, measured the difference between their widths, and added
+ *     it back as padding so the page would not jump sideways when the scrollbar
+ *     vanished. `scrollbar-gutter: stable` in index.css reserves that space
+ *     permanently, so there is nothing left to compensate for.
+ *   - **`touch-action: none`.** It was doing the real work of blocking touch
+ *     scroll on a container that `overflow: hidden` alone would not stop. On
+ *     the document it is both unnecessary and harmful: it blocks pinch-zoom,
+ *     which some people need in order to read.
  */
-
-interface LockState {
-  scrollTop: number;
-  originalOverflow: string;
-  originalOverscrollBehavior: string;
-  originalTouchAction: string;
-  originalPaddingRight: string;
-}
 
 class ScrollLockManager {
   private lockCount = 0;
-  private lockState: LockState | null = null;
-  private scrollContainer: HTMLElement | null = null;
-
-  private getScrollContainer(): HTMLElement | null {
-    if (this.scrollContainer) {
-      // Verify it still exists in DOM
-      if (document.contains(this.scrollContainer)) {
-        return this.scrollContainer;
-      }
-    }
-
-    // Find scroll container
-    const container = document.querySelector('[data-scroll-container]') as HTMLElement | null;
-    if (container) {
-      this.scrollContainer = container;
-    }
-    return container;
-  }
 
   /**
-   * Lock the scroll container
-   * Uses ref-counting so multiple calls require multiple unlocks
+   * Set while locked. Holds the inline value to put back, which is usually the
+   * empty string — restoring `""` removes the inline declaration entirely and
+   * lets the stylesheet take over again, rather than hardcoding a value this
+   * module would then own.
    */
+  private restore: { overflow: string; scrollY: number } | null = null;
+
   lock(): void {
-    const container = this.getScrollContainer();
-    if (!container) {
-      console.warn('[ScrollLockManager] Scroll container not found');
-      return;
-    }
+    this.lockCount += 1;
+    if (this.lockCount !== 1) return;
 
-    this.lockCount++;
-
-    // Only lock on first call
-    if (this.lockCount === 1) {
-      // Store current state
-      this.lockState = {
-        scrollTop: container.scrollTop,
-        originalOverflow: container.style.overflow || '',
-        originalOverscrollBehavior: container.style.overscrollBehavior || '',
-        originalTouchAction: container.style.touchAction || '',
-        originalPaddingRight: container.style.paddingRight || '',
-      };
-
-      // Calculate scrollbar width (desktop only)
-      let scrollbarWidth = 0;
-      if (window.innerWidth >= 1024) {
-        const outer = document.createElement('div');
-        outer.style.visibility = 'hidden';
-        outer.style.overflow = 'scroll';
-        // msOverflowStyle is IE/legacy-Edge only, so it is absent from CSSStyleDeclaration
-        (outer.style as CSSStyleDeclaration & { msOverflowStyle: string }).msOverflowStyle = 'scrollbar';
-        outer.style.position = 'absolute';
-        outer.style.width = '100px';
-        outer.style.height = '100px';
-        document.body.appendChild(outer);
-
-        const inner = document.createElement('div');
-        inner.style.width = '100%';
-        inner.style.height = '200px';
-        outer.appendChild(inner);
-
-        scrollbarWidth = outer.offsetWidth - inner.offsetWidth;
-        document.body.removeChild(outer);
-      }
-
-      // Lock scroll
-      container.style.overflow = 'hidden';
-      container.style.overscrollBehavior = 'contain';
-      container.style.touchAction = 'none';
-
-      // Compensate for scrollbar width to prevent layout shift (desktop only)
-      if (scrollbarWidth > 0) {
-        const computed = window.getComputedStyle(container);
-        const currentPaddingRight = parseInt(computed.paddingRight, 10) || 0;
-        container.style.paddingRight = `${currentPaddingRight + scrollbarWidth}px`;
-      }
-    }
+    const html = document.documentElement;
+    this.restore = {
+      overflow: html.style.overflow,
+      scrollY: window.scrollY,
+    };
+    html.style.overflow = "hidden";
   }
 
-  /**
-   * Unlock the scroll container
-   * Uses ref-counting - only unlocks when count reaches 0
-   */
   unlock(): void {
-    const container = this.getScrollContainer();
-    if (!container || !this.lockState) {
-      // Already unlocked or never locked
-      if (this.lockCount > 0) {
-        this.lockCount = 0;
-      }
-      return;
-    }
+    if (this.lockCount === 0) return;
 
-    this.lockCount--;
+    this.lockCount -= 1;
+    if (this.lockCount !== 0) return;
 
-    // Only unlock when all locks are released
-    if (this.lockCount === 0) {
-      // Restore original styles (empty string removes inline style, allowing CSS classes to apply)
-      container.style.overflow = this.lockState.originalOverflow || '';
-      container.style.overscrollBehavior = this.lockState.originalOverscrollBehavior || '';
-      container.style.touchAction = this.lockState.originalTouchAction || '';
-      container.style.paddingRight = this.lockState.originalPaddingRight || '';
-
-      // Restore scroll position after styles are restored
-      requestAnimationFrame(() => {
-        if (container && this.lockState) {
-          container.scrollTop = this.lockState.scrollTop;
-          // Ensure overflow-y-auto is active (removing inline style should let className take over)
-          // But explicitly ensure it if needed
-          const computed = window.getComputedStyle(container);
-          if (computed.overflow === 'hidden' && !container.classList.contains('overflow-hidden')) {
-            // If somehow still hidden and not intentional, force restore
-            container.style.overflow = '';
-          }
-        }
-      });
-
-      // Clear state
-      this.lockState = null;
-    }
+    this.applyRestore();
   }
 
-  /**
-   * Force unlock (emergency cleanup)
-   * Resets ref-count to 0 and unlocks immediately
-   */
+  /** Emergency cleanup. Drops the count to zero whatever it was. */
   forceUnlock(): void {
-    const container = this.getScrollContainer();
-    if (container) {
-      // Always restore to default (remove all inline styles to let CSS classes apply)
-      container.style.overflow = '';
-      container.style.overscrollBehavior = '';
-      container.style.touchAction = '';
-      container.style.paddingRight = '';
-
-      if (this.lockState) {
-        requestAnimationFrame(() => {
-          if (container && this.lockState) {
-            container.scrollTop = this.lockState.scrollTop;
-          }
-        });
-      }
-    }
-
     this.lockCount = 0;
-    this.lockState = null;
+    this.applyRestore();
   }
 
-  /**
-   * Get current lock state (for debugging)
-   */
-  getState(): { isLocked: boolean; lockCount: number; scrollTop: number } {
-    const container = this.getScrollContainer();
+  getState(): { isLocked: boolean; lockCount: number; scrollY: number } {
     return {
       isLocked: this.lockCount > 0,
       lockCount: this.lockCount,
-      scrollTop: container?.scrollTop ?? 0,
+      scrollY: window.scrollY,
     };
+  }
+
+  private applyRestore(): void {
+    if (!this.restore) return;
+
+    const { overflow, scrollY } = this.restore;
+    this.restore = null;
+
+    document.documentElement.style.overflow = overflow;
+
+    /*
+     * Every current engine keeps the scroll offset across an `overflow: hidden`
+     * round trip, so this is a guard rather than the mechanism — and it is
+     * conditional because an unconditional `scrollTo` is itself a visible jump
+     * on the common path where nothing moved. One pixel of tolerance absorbs
+     * subpixel rounding on fractional-DPI displays.
+     */
+    if (Math.abs(window.scrollY - scrollY) > 1) {
+      window.scrollTo({ top: scrollY, behavior: "auto" });
+    }
   }
 }
 
-// Export singleton instance
 export const scrollLockManager = new ScrollLockManager();
 
-// Force unlock on page unload as safety measure
-if (typeof window !== 'undefined') {
-  window.addEventListener('beforeunload', () => {
+// Safety net: a lock that outlives the page would otherwise be restored from
+// the back/forward cache still clamped.
+if (typeof window !== "undefined") {
+  window.addEventListener("beforeunload", () => {
     scrollLockManager.forceUnlock();
   });
 }
-

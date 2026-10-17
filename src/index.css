@@ -3,26 +3,57 @@
 @import "./styles/tokens.css";
 @import "./styles/microinteractions.css";
 
-/* Force dark mode globally - no light mode overrides */
 html {
   color-scheme: dark;
-  scroll-behavior: smooth;
+
+  /*
+   * Reserve the scrollbar's width permanently.
+   *
+   * This is what lets a modal lock scrolling by setting `overflow: hidden`
+   * without the page jumping sideways as the scrollbar disappears. The previous
+   * answer was 30 lines of JavaScript that built two throwaway divs, measured
+   * the delta between their widths, and added it back as padding on every lock.
+   * One declaration replaces all of it.
+   */
+  scrollbar-gutter: stable;
 }
 
-/* Global height rules for app structure */
-html, body, #root {
-  height: 100%;
-  overflow: hidden; /* Prevent html and body from scrolling - only [data-scroll-container] scrolls */
-}
-
-/* Body styles - no flex centering, no min-height that breaks internal scroll */
-/* Body does NOT scroll - only the internal scroll container scrolls */
+/*
+ * The document scrolls. Nothing else does.
+ *
+ * It used to be the other way round: `html, body, #root` were pinned to
+ * `height: 100%; overflow: hidden` and one inner `[data-scroll-container]`
+ * carried the whole site. That single decision was the source of most of what
+ * read as "the scrolling is bad", and every item below was observed rather than
+ * theorised:
+ *
+ *   - A mobile browser retracts its address bar only when the *document*
+ *     scrolls. With an inner scroller it never retracts, so the page
+ *     permanently gave up 60–100px of phone screen.
+ *   - Inner scrollers do not get the platform's fling curve, and
+ *     `overscroll-behavior: contain` removed the rubber band on top of that, so
+ *     both ends of every page felt dead.
+ *   - `position: fixed` inside the shell resolved against the shell, not the
+ *     viewport. The story skip button landing 75px low was read as a quirk to
+ *     patch around; it was this.
+ *   - `scroll-behavior: smooth` sat here on an element that could not scroll,
+ *     so it never did anything.
+ *   - `animation-timeline: view()` — the whole `.scroll-rise` system — measured
+ *     against the container instead of the viewport.
+ *   - Native scroll restoration was gone, which is why anything that cared
+ *     about scroll position had to reach for `querySelector`.
+ *
+ * Both reference sites scroll the document. Neither fakes it. Smoothing, when
+ * it arrives, goes on top of this rather than instead of it.
+ *
+ * No `scroll-behavior: smooth` here on purpose. Route changes want to land
+ * instantly, and a smoothing library has to own the easing or the two fight.
+ */
 body {
   margin: 0;
   min-width: 320px;
   background: rgb(var(--bg-0));
   color: rgb(var(--fg-0));
-  overflow: hidden; /* Prevent body from scrolling - internal container handles it */
 }
 
 /* Performance optimizations */

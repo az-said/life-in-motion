@@ -32,52 +32,46 @@ export default function Header() {
   const hoverTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const [buttonPosition, setButtonPosition] = useState({ top: 0, right: 0 });
   const { play } = useSound();
-  
-  // Track if we've already set up scroll listener (prevent duplicates)
-  const scrollListenerSetupRef = useRef(false);
 
-  // Track scroll - FIXED VERSION
+  /*
+   * Does the header sit on a scrolled page? Drives the backdrop below.
+   *
+   * On `window` now that the document scrolls. The old version queried for
+   * `[data-scroll-container]` and silently did nothing when it was not there —
+   * which also meant a ref guard against double-attaching, and a cleanup that
+   * only ran on the branch where the element had been found. `window` is always
+   * present, so the effect is just an add and a remove.
+   *
+   * The rAF throttle stays: scroll fires far more often than a boolean can
+   * change, and reading `scrollY` inside the frame keeps the measurement with
+   * the paint rather than ahead of it. `setIsScrolled` is passed a function
+   * that returns the previous value unchanged when the boolean has not flipped,
+   * so React bails out of the re-render instead of re-running the whole header.
+   */
   useEffect(() => {
-    // Prevent duplicate setup
-    if (scrollListenerSetupRef.current) return;
-    
     let rafId: number | null = null;
-    
+
     const handleScroll = () => {
       if (rafId !== null) return;
-      
+
       rafId = requestAnimationFrame(() => {
-        const scrollContainer = document.querySelector('[data-scroll-container]') as HTMLElement;
-        if (scrollContainer) {
-          const shouldBeScrolled = scrollContainer.scrollTop > 10;
-          // Only update if value actually changed
-          setIsScrolled(prev => prev === shouldBeScrolled ? prev : shouldBeScrolled);
-        }
         rafId = null;
+        const shouldBeScrolled = window.scrollY > 10;
+        setIsScrolled((prev) => (prev === shouldBeScrolled ? prev : shouldBeScrolled));
       });
     };
 
-    const scrollContainer = document.querySelector('[data-scroll-container]') as HTMLElement;
-    if (scrollContainer) {
-      scrollListenerSetupRef.current = true;
-      scrollContainer.addEventListener("scroll", handleScroll, { passive: true });
-      
-      // Check initial scroll position AFTER a delay to avoid render loop
-      requestAnimationFrame(() => {
-        requestAnimationFrame(() => {
-          handleScroll();
-        });
-      });
-      
-      return () => {
-        scrollContainer.removeEventListener("scroll", handleScroll);
-        scrollListenerSetupRef.current = false;
-        if (rafId !== null) {
-          cancelAnimationFrame(rafId);
-        }
-      };
-    }
-  }, []); // Keep empty deps - only run once
+    window.addEventListener("scroll", handleScroll, { passive: true });
+
+    // A reload restoring a mid-page offset must not paint one frame of
+    // transparent header before the first scroll event arrives.
+    handleScroll();
+
+    return () => {
+      window.removeEventListener("scroll", handleScroll);
+      if (rafId !== null) cancelAnimationFrame(rafId);
+    };
+  }, []);
 
   // Publish the header's real height as --header-h so the scroll container can
   // pad by exactly that much. It used to be hardcoded at 57px while the header

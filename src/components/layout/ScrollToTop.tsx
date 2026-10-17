@@ -1,8 +1,14 @@
 /**
- * ScrollToTop - Scrolls to top on route change
- * 
- * Listens to location changes and scrolls the scroll container to top.
- * Only scrolls if the container is not currently locked by a modal.
+ * Resets scroll position on route change.
+ *
+ * The document is what scrolls, so this is `window.scrollTo` rather than a
+ * lookup for an inner container. Two routes opt out:
+ *
+ *   - The story route owns a snap scroller and manages its own position.
+ *   - **Any route entered while a modal holds the scroll lock.** The lock
+ *     clamps `<html>` and remembers an offset to restore on close; scrolling
+ *     underneath it would make that restore land somewhere the reader never
+ *     was.
  */
 
 import { useEffect } from "react";
@@ -13,26 +19,11 @@ export default function ScrollToTop() {
   const location = useLocation();
 
   useEffect(() => {
-    // Only scroll to top if scroll is not locked (no modal open)
-    const lockState = scrollLockManager.getState();
-    if (lockState.isLocked) {
-      // Don't scroll if a modal is open - let user close modal first
-      return;
-    }
+    if (scrollLockManager.getState().isLocked) return;
+    if (location.pathname === "/story") return;
 
-    // Find the main scroll container (data-scroll-container)
-    const scrollContainer = document.querySelector('[data-scroll-container]') as HTMLElement;
-    
-    if (scrollContainer) {
-      // Scroll the main container to top (non-story routes only)
-      // Story route has its own scroll management
-      const isStoryRoute = location.pathname === "/story";
-      if (!isStoryRoute) {
-        scrollContainer.scrollTo({ top: 0, left: 0, behavior: "auto" });
-      }
-    }
+    window.scrollTo({ top: 0, left: 0, behavior: "auto" });
   }, [location.pathname]);
 
   return null;
 }
-
